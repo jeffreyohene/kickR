@@ -1,21 +1,17 @@
 Package: kickR
 Type: Package
-Title: A R Package to scrape and analyze football metrics
-Version: 1.0.0
+Title: Scrape FBREF team and player data
+Version: 1.0.1
 Author: Jeffrey Ohene
 Maintainer: Jeffrey Ohene <jeffrey.ohene@aol.com>
-Description: KickR is your all-in-one R package for football analytics and 
-    data scraping. Unleash its power to access and analyze football-related data, 
-    encompassing player and team statistics from diverse leagues, including the 
-    prominent Big 5 leagues (English Premier League, La Liga, Bundesliga, Serie A, 
-    and Ligue 1). With KickR, web scraping football statistics from websites such 
-    as FBref is a breeze, while the package also equips you with the tools to 
-    effortlessly save and export data to common formats. 
-    Excitingly, our upcoming KickR update will introduce features to elevate your 
-    football analytics game. From enhancing scouting and performance analysis to 
-    identifying similar players based on performance metrics, KickR is your key to 
-    deep insights and informed decision-making in the dynamic world of football 
-    analytics and machine learning.
+Description: Scrape FBREF data for the Big 5 leagues (English Premier League,
+    La Liga, Bundesliga, Serie A, and Ligue 1) as well as other leagues like
+    the Belgian Pro League, Eredivise, Liga MX, MLS, Primera Liga, and the 
+    Brazilian Serie A, etc. The package also equips you with the tools to 
+    effortlessly save and export the scraped data to common formats for 
+    further analysis. 
+URL: https://github.com/jeffreyohene/kickR
+BugReports: https://github.com/jeffreyohene/kickR/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

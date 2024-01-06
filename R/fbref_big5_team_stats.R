@@ -140,10 +140,6 @@ fbref_big5_team_stats <- function(season = NULL) {
     return(NULL)
   }
 
-  header <- df[1, ]  # Get the header row
-  colnames(df) <- header
-  df <- df[-1, ]
-
 
   colnames(df) <- cleaned_column_names
 
