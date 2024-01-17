@@ -19,11 +19,10 @@
 #' @return A data frame containing the requested MLS team statistics.
 #'
 #' @examples
-#' # Retrieve standard MLS team statistics for the 2022 season
-#' fbref_mls_team_stats(season = '2022', type = 'standard')
-#'
+#' \dontrun{
 #' # Retrieve goalkeeping statistics for the current MLS season
 #' fbref_mls_team_stats(type = 'goalkeeping')
+#' }
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/22/Major-League-Soccer-Stats}

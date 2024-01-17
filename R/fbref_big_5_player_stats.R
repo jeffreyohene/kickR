@@ -21,9 +21,10 @@
 #' specified season and of the specified type.
 #'
 #' @examples
-#'
+#'\dontrun{
 #' # Get passing player statistics for the 2022/2023 season
 #' fbref_big5_player_stats(season = "2022/2023", type = "passing")
+#'}
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/Big5/Big-5-European-Leagues-Stats}

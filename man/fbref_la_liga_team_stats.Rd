@@ -20,11 +20,10 @@ This function retrieves team statistics for La Liga from FBref for a
 specified season and type.
 }
 \examples{
+\dontrun{
 # Get standard statistics for the 2022/2023 season
 fbref_la_liga_team_stats(season = "2022/2023", type = "standard")
-
-# Get goalkeeping statistics for the 2022/2023 season
-fbref_la_liga_team_stats(season = "2022/2023", type = "goalkeeping")
+}
 
 }
 \seealso{

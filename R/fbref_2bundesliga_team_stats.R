@@ -8,14 +8,10 @@
 #' @return A data frame containing the requested team statistics.
 #'
 #' @examples
-#' # Fetch standard team statistics for the 2022/2023 season
-#' fbref_2bundesliga_team_stats(season = "2022/2023", type = "standard")
-#'
+#'\dontrun{
 #' # Fetch goalkeeping team statistics for the 2022/2023 season
 #' fbref_2bundesliga_team_stats(season = "2022/2023", type = "goalkeeping")
-#'
-#' # Fetch advanced goalkeeping team statistics for the 2022/2023 season
-#' fbref_2bundesliga_team_stats(season = "2022/2023", type = "advanced_goalkeeping")
+#'}
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/33/2-Bundesliga-Stats}

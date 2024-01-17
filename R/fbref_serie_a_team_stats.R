@@ -17,7 +17,9 @@
 #'          specified season and type.
 #'
 #' @examples
+#' \dontrun{
 #' fbref_serie_a_team_stats(season = '2018/2019', type = 'pass_types')
+#' }
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/11/Serie-A-Stats}

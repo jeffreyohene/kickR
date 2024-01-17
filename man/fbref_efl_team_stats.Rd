@@ -25,7 +25,9 @@ The function uses the 'rvest' package to scrape data from FBref.
 The 'season' parameter should be in a valid 'YYYY/YYYY' format.
 }
 \examples{
+\dontrun{
 fbref_efl_team_stats("2021/2022", "standard")
+}
 
 }
 \seealso{

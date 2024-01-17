@@ -21,7 +21,9 @@ This function fetches English Premier League team statistics from
 FBref based on the provided season and type.
 }
 \examples{
+\dontrun{
 fbref_epl_team_stats(season = "2022/2023", type = "standard")
+}
 
 }
 \seealso{

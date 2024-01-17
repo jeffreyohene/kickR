@@ -18,7 +18,9 @@ This function scrapes team statistics for Liga MX from FBRef.com for a
 specific season and data type.
 }
 \examples{
+\dontrun{
 fbref_liga_mx_team_stats(season = "2022/2023", type = "standard")
+}
 
 }
 \seealso{

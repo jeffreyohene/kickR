@@ -18,11 +18,11 @@
 #'          type.
 #'
 #' @examples
-#' # Retrieve standard team statistics for the 2022/2023 season
-#' data <- fbref_segunda_division_team_stats(season = '2022/2023', type = 'standard')
-#'
+#' \dontrun{
 #' # Retrieve goalkeeping statistics for the current season
 #' data <- fbref_segunda_division_team_stats(type = 'goalkeeping')
+#' }
+#'
 #' @seealso
 #' \url{https://fbref.com/en/comps/17/Segunda-Division-Stats}
 #'

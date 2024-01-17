@@ -28,9 +28,10 @@ These leagues include:
 - Ligue 1 (France)
 }
 \examples{
-
+\dontrun{
 # Get passing player statistics for the 2022/2023 season
 fbref_big5_player_stats(season = "2022/2023", type = "passing")
+}
 
 }
 \seealso{

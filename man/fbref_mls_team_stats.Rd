@@ -23,11 +23,10 @@ This function scrapes team statistics for Major League Soccer (MLS) from
 FBref for a specified season and type.
 }
 \examples{
-# Retrieve standard MLS team statistics for the 2022 season
-fbref_mls_team_stats(season = '2022', type = 'standard')
-
+\dontrun{
 # Retrieve goalkeeping statistics for the current MLS season
 fbref_mls_team_stats(type = 'goalkeeping')
+}
 
 }
 \seealso{

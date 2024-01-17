@@ -15,14 +15,10 @@ A data frame containing the requested team statistics.
 This function fetches Bundesliga team statistics data from FBRef for a specified season and data type.
 }
 \examples{
-# Fetch standard team statistics for the 2022/2023 season
-fbref_2bundesliga_team_stats(season = "2022/2023", type = "standard")
-
+\dontrun{
 # Fetch goalkeeping team statistics for the 2022/2023 season
 fbref_2bundesliga_team_stats(season = "2022/2023", type = "goalkeeping")
-
-# Fetch advanced goalkeeping team statistics for the 2022/2023 season
-fbref_2bundesliga_team_stats(season = "2022/2023", type = "advanced_goalkeeping")
+}
 
 }
 \seealso{

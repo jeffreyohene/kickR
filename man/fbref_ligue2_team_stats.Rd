@@ -18,14 +18,10 @@ A data frame containing the requested team statistics for the specified season a
 This function scrapes team statistics for Ligue 2 from FBref.com.
 }
 \examples{
-# Scrape Standard Team Statistics for the 2021/2022 season
-fbref_ligue2_team_stats(season = "2021/2022", type = "standard")
-
+\dontrun{
 # Scrape Goalkeeping Team Statistics for the 2022/2023 season
 fbref_ligue2_team_stats(season = "2022/2023", type = "goalkeeping")
-
-# Scrape Possession Team Statistics for the current season (default)
-fbref_ligue2_team_stats(type = "possession")
+}
 
 
 }

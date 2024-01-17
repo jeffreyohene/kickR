@@ -18,21 +18,9 @@ This function scrapes team statistics for the Bundesliga from FBref based
 on the season and type provided.
 }
 \examples{
-# Scrape standard team statistics for the 2022/2023 Bundesliga season
-bundesliga_stats_standard_2022 <- fbref_bundesliga_team_stats(
-          season = "2022/2023", type = "standard")
-
-# Scrape goalkeeping team statistics for the 2021/2022 Bundesliga season
-bundesliga_stats_goalkeeping_2021 <- fbref_bundesliga_team_stats(
-          season = "2021/2022", type = "goalkeeping")
-
-# Scrape shooting team statistics for the 2019/2020 Bundesliga season
-bundesliga_stats_shooting_2019 <- fbref_bundesliga_team_stats(
-          season = "2019/2020", type = "shooting")
-
-# Scrape possession team statistics for the current Bundesliga season
-bundesliga_stats_possession_current <- fbref_bundesliga_team_stats(
-          type = "possession")
+\dontrun{
+fbref_bundesliga_team_stats(season = "2019/2020", type = "shooting")
+}
 
 }
 \seealso{

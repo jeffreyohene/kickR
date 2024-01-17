@@ -21,7 +21,9 @@
 #' @importFrom rvest read_html html_node html_table
 #'
 #' @examples
+#' \dontrun{
 #' fbref_efl_team_stats("2021/2022", "standard")
+#' }
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/10/Championship-Stats}

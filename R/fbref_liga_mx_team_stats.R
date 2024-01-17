@@ -15,7 +15,9 @@
 #' @importFrom rvest read_html html_node html_table
 #'
 #' @examples
+#' \dontrun{
 #' fbref_liga_mx_team_stats(season = "2022/2023", type = "standard")
+#' }
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/31/Liga-MX-Stats}

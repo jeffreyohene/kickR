@@ -16,19 +16,10 @@
 #' @importFrom rvest read_html html_node html_table
 #'
 #' @examples
-#' # Scrape standard team statistics for the current Campeonato Brasileiro
+#' \dontrun{
 #' # Série A season
-#' seriea_stats_standard_current <- fbref_br_serie_a_team_stats()
-#'
-#' # Scrape goalkeeping team statistics for the 2022/2023 Campeonato
-#' # Brasileiro Série A season
-#' seriea_stats_goalkeeping_2022 <- fbref_br_serie_a_team_stats(
-#'       season = "2022/2023", type = "goalkeeping")
-#'
-#' # Scrape shooting team statistics for the 2019/2020 Campeonato Brasileiro
-#' # Série A season
-#' seriea_stats_shooting_2019 <- fbref_br_serie_a_team_stats(
-#'       season = "2019/2020", type = "shooting")
+#' fbref_br_serie_a_team_stats()
+#' }
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/24/Serie-A-Stats}

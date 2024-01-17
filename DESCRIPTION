@@ -1,15 +1,13 @@
 Package: kickR
 Type: Package
-Title: Scrape FBREF team and player data
+Title: Scrape Team and Player Data
 Version: 1.0.1
 Author: Jeffrey Ohene
 Maintainer: Jeffrey Ohene <jeffrey.ohene@aol.com>
-Description: Scrape FBREF data for the Big 5 leagues (English Premier League,
-    La Liga, Bundesliga, Serie A, and Ligue 1) as well as other leagues like
-    the Belgian Pro League, Eredivise, Liga MX, MLS, Primera Liga, and the 
-    Brazilian Serie A, etc. The package also equips you with the tools to 
-    effortlessly save and export the scraped data to common formats for 
-    further analysis. 
+Description: Retrieve data for teams in major European leagues and North and
+    South American major leagues through web scraping. The package also equips
+    you with the tools to effortlessly save and export the scraped data to
+    common formats for further analysis.
 URL: https://github.com/jeffreyohene/kickR
 BugReports: https://github.com/jeffreyohene/kickR/issues
 License: MIT + file LICENSE
@@ -19,7 +17,4 @@ Imports:
     jsonlite,
     rvest,
     openxlsx
-Suggests:
-  testthat
-Additional_repositories: inst
 RoxygenNote: 7.2.3

@@ -16,7 +16,9 @@
 #'          specified season and type.
 #'
 #' @examples
+#' \dontrun{
 #' fbref_serie_b_team_stats(season = '2021/2022', type = 'shooting')
+#' }
 #'
 #' @importFrom rvest read_html html_node html_table
 #'

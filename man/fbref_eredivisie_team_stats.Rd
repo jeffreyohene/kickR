@@ -29,14 +29,10 @@ The function allows you to specify the season and the type of statistics you
 want to retrieve.
 }
 \examples{
-# Retrieve standard team statistics for the 2022/2023 season
-fbref_eredivisie_team_stats(season = "2022/2023", type = "standard")
-
+\dontrun{
 # Retrieve goalkeeping team statistics for the current season
 fbref_eredivisie_team_stats(type = "goalkeeping")
-
-# Retrieve advanced goalkeeping team statistics for the 2021/2022 season
-fbref_eredivisie_team_stats(season = "2021/2022", type = "advanced_goalkeeping")
+}
 
 }
 \seealso{

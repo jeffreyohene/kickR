@@ -22,7 +22,9 @@ This function retrieves Serie A team statistics from the FBref website for a
 specified season and type.
 }
 \examples{
+\dontrun{
 fbref_serie_a_team_stats(season = '2018/2019', type = 'pass_types')
+}
 
 }
 \seealso{

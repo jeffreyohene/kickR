@@ -22,12 +22,13 @@ This function retrieves football team statistics from FBref for a specified
 league, season, and type of statistics.
 }
 \examples{
-
+\dontrun{
 # Retrieve Premier League standard statistics for the current season
 fbref_team_stats(league = 'Premier League', type = 'standard')
 
 # Retrieve Bundesliga 2 shooting statistics for the 2022/2023 season
 fbref_team_stats(league = 'Bundesliga 2', season = '2022/2023', type = 'shooting')
+}
 
 }
 \seealso{

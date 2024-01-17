@@ -18,11 +18,10 @@
 #'
 #'
 #' @examples
+#' \dontrun{
 #' # Get standard statistics for the 2022/2023 season
 #' fbref_la_liga_team_stats(season = "2022/2023", type = "standard")
-#'
-#' # Get goalkeeping statistics for the 2022/2023 season
-#' fbref_la_liga_team_stats(season = "2022/2023", type = "goalkeeping")
+#' }
 #'
 #' @seealso
 #' \url{https://fbref.com/en/comps/12/La-Liga-Stats}

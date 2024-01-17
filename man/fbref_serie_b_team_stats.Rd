@@ -22,7 +22,9 @@ This function retrieves Serie B team statistics from the FBref website for a
 specified season and type.
 }
 \examples{
+\dontrun{
 fbref_serie_b_team_stats(season = '2021/2022', type = 'shooting')
+}
 
 }
 \seealso{
