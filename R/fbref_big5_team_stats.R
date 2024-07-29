@@ -16,11 +16,9 @@
 #' @import rvest
 #'
 #' @examples
-#' # Retrieve team statistics for the 2021/2022 season (or the most recent season)
-#' team_stats_2022 <- fbref_big5_team_stats("2021/2022")
-#'
-#' # Retrieve team statistics for the most recent season
-#' team_stats_latest <- fbref_big5_team_stats()
+#' \dontrun{
+#' fbref_big5_team_stats("2021/2022")
+#' }
 #'
 #' @seealso fbref_big5_player_stats, available_seasons
 #'

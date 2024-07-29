@@ -1,66 +1,54 @@
-#' Get football statistics for players from the top 5 European leagues (Big 5).
-#'
-#' This function retrieves football statistics for players from the top 5
-#' European leagues, commonly referred to as the "Big 5" leagues.
-#'
-#' These leagues include:
-#' - English Premier League (EPL)
-#' - La Liga (Spain)
-#' - Serie A (Italy)
-#' - Bundesliga (Germany)
-#' - Ligue 1 (France)
-#'
-#' @name fbref_big5_player_stats
-#' @param season The season for which statistics are requested
-#'              (e.g., "2022/2023"). If not provided, the most recent season will be used.
-#' @param type The type of statistics to retrieve (e.g., "standard",
-#'              "goalkeeping", "shooting"). If not provided, "standard" statistics
-#'              will be used.
-#'
-#' @return A data frame containing football statistics for players in the
-#' specified season and of the specified type.
-#'
-#' @examples
-#'\dontrun{
-#' # Get passing player statistics for the 2022/2023 season
-#' fbref_big5_player_stats(season = "2022/2023", type = "passing")
-#'}
-#'
-#' @seealso
-#' \url{https://fbref.com/en/comps/Big5/Big-5-European-Leagues-Stats}
-#'
-#' @importFrom rvest read_html html_node html_table
-#'
-#' @export
 # gebrauchte package
-if (!requireNamespace("rvest", quietly = TRUE)) {
-  install.packages("rvest")
-}
+#if (!requireNamespace("rvest","RSelenium", quietly = TRUE)) {
+#  install.packages("rvest")
+#}
 
-fbref_big5_player_stats <- function(season = NULL, type = NULL) {
+fbref_player_stats <- function(season = NULL, league = NULL, type = NULL) {
   base_url <- 'https://fbref.com/en/comps/'
-  code <- 'Big5/'
-  standard <- 'stats/'
-  spieler <- 'players/'
-  league_stats <- 'Big-5-European-Leagues-Stats'
+
 
   # Define valid seasons
   valid_seasons <- c('2018/2019','2019/2020','2020/2021',
-                     '2021/2022','2022/2023','2023/2024')
+                     '2021/2022','2022/2023', "2023/2024")
 
-  # Define a mapping of type values to CSS selectors
-  type_to_selector <- list(
-    standard = '#stats_standard',
-    goalkeeping = '#stats_keeper',
-    advanced_goalkeeping = '#stats_keeper_adv',
-    shooting = '#stats_shooting',
-    passing = '#stats_passing',
-    pass_types = '#stats_passing_types',
-    goal_creation = '#stats_gca',
-    defensive_actions = '#stats_defense',
-    possession = '#stats_possession',
-    playing_time = '#stats_playing_time',
-    miscellaneous = '#stats_misc'
+  # league codes
+  codes <- list(
+    premier_league = '9',
+    championship = '10',
+    serie_a = '11',
+    la_liga = '12',
+    ligue_1 = '13',
+    segunda_division = '17',
+    serie_b = '18',
+    bundesliga = '20',
+    mls = '22',
+    eredivisie = '23',
+    br_serie_a = '24',
+    liga_mx = '31',
+    primera_liga = '32',
+    bundesliga_2 = '33',
+    belgian_pro_league = '37',
+    ligue_2 = '60'
+  )
+
+  # league suffixes
+  leagues <- list(
+    premier_league = 'Premier-League-Stats',
+    championship = 'Championship-Stats',
+    serie_a = 'Serie-A-Stats',
+    la_liga = 'La-Liga-Stats',
+    ligue_1 = 'Ligue-1-Stats',
+    segunda_division = 'Segunda-Division-Stats',
+    serie_b = 'Serie-B-Stats',
+    bundesliga = 'Bundesliga-Stats',
+    mls = 'Major-League-Soccer-Stats',
+    eredivisie = 'Eredivisie-Stats',
+    br_serie_a = 'Serie-A-Stats',
+    liga_mx = 'Liga-MX-Stats',
+    primera_liga = 'Primeira-Liga-Stats',
+    bundesliga_2 = '2-Bundesliga-Stats',
+    belgian_pro_league = 'Belgian-Pro-League-Stats',
+    ligue_2 = 'Ligue-2-Stats'
   )
 
   # Mapping stats
@@ -81,36 +69,36 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
 
   # Define the expected vectors for each data type
   cleaned_names_standard <- c("player", "nation", "position","club",
-                                 "league", "age", "birth_year","matches_played",
-                                 "starts","minutes","mins_per_90", "goals",
-                                 "assists", "goals_and_assists",
-                                 "non_penalty_goals", "penalties",
-                                 "penalty_kick_attempts","yellow_cards",
-                                 "red_cards", "xG", "npxG", "xAG", "npxG+xAG",
-                                 "progressive_carries", "progressive_passes",
-                                 "goals_per90", "assists_per90",
-                                 "goals_and_assists_per90",
-                                 "non_penalty_goals_per90",
-                                 "non_penalty_goals_and_assists_per90",
-                                 "xg_per90","xag_per90", "xg_and_xag_per90",
-                                 "npxg_per90","npxg_and_xag_per90")
+                              "age", "birth_year","matches_played",
+                              "starts","minutes","mins_per_90", "goals",
+                              "assists", "goals_and_assists",
+                              "non_penalty_goals", "penalties",
+                              "penalty_kick_attempts","yellow_cards",
+                              "red_cards", "xG", "npxG", "xAG", "npxG+xAG",
+                              "progressive_carries", "progressive_passes",
+                              "goals_per90", "assists_per90",
+                              "goals_and_assists_per90",
+                              "non_penalty_goals_per90",
+                              "non_penalty_goals_and_assists_per90",
+                              "xg_per90","xag_per90", "xg_and_xag_per90",
+                              "npxg_per90","npxg_and_xag_per90")
 
   cleaned_names_goalkeeping <- c("player", "nation", "position", "club",
-                                    "league","age","birth_year",
-                                    "total_matches_played","starts",
-                                    "total_minutes_played", "mins_per_90",
-                                    "goals_against", "goals_against_per90",
-                                    "shots_on_target_against", "saves",
-                                    "save_percentage", "wins", "draws","losses",
-                                    "clean_sheets", "clean_sheet_percentage",
-                                    "penalties_attempted",
-                                    "penalty_kicks_allowed",
-                                    "penalty_kicks_saved",
-                                    "penalty_kicks_missed",
-                                    "penalty_kicks_save_percentage")
+                                 "age","birth_year",
+                                 "total_matches_played","starts",
+                                 "total_minutes_played", "mins_per_90",
+                                 "goals_against", "goals_against_per90",
+                                 "shots_on_target_against", "saves",
+                                 "save_percentage", "wins", "draws","losses",
+                                 "clean_sheets", "clean_sheet_percentage",
+                                 "penalties_attempted",
+                                 "penalty_kicks_allowed",
+                                 "penalty_kicks_saved",
+                                 "penalty_kicks_missed",
+                                 "penalty_kicks_save_percentage")
 
   cleaned_names_adv_goalkeeping <- c("player", "nation", "position",
-                                     "club","league","age","birth_year",
+                                     "club","age","birth_year",
                                      "mins_per_90", "goals_against",
                                      "penalty_kicks_allowed",
                                      "free_kick_goals_against",
@@ -133,7 +121,7 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                                      "defensive_actions_outside_penalty_box_per90",
                                      "defensive_actions_outside_penalty_box_avg_dist")
 
-  cleaned_names_shooting <- c("player", "nation", "position", "club","league",
+  cleaned_names_shooting <- c("player", "nation", "position", "club",
                               "age","birth_year", "mins_per_90","goals",
                               "shots", "shots_on_target",
                               "shots_on_target_percentage", "shots_per90",
@@ -145,8 +133,8 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                               "npxG_per_shot", "xg_performance",
                               "npxg_performance")
 
-  cleaned_names_passing <- c("player", "nation", "position", "club","league",
-                             "age","birth_year", "mins_per_90",
+  cleaned_names_passing <- c("player", "nation", "position", "club", "age",
+                             "birth_year", "mins_per_90",
                              "total_passes_completed", "total_passes_attempted",
                              "pass_completion_percentage",
                              "total_passing_distance",
@@ -163,7 +151,7 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                              "passes_into_penalty_box",
                              "crosses_into_penalty_box", "progressive_passes")
 
-  cleaned_names_pass_types <- c("player", "nation", "position", "club","league",
+  cleaned_names_pass_types <- c("player", "nation", "position", "club",
                                 "age","birth_year", "mins_per_90",
                                 "total_passes_attempted", "live_ball_passes",
                                 "dead_ball_passes", "passes_from_free_kicks",
@@ -175,7 +163,7 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                                 "passes_offside", "blocks")
 
   cleaned_names_goal_creation <- c("player", "nation", "position", "club",
-                                   "league","age","birth_year", "mins_per_90",
+                                   "age","birth_year", "mins_per_90",
                                    "shot_creating_actions",
                                    "shot_creating_actions_per90",
                                    "sca_live_passes", "sca_dead_passes",
@@ -188,7 +176,7 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                                    "gca_defensive_actions")
 
   cleaned_names_defensive_actions <- c("player", "nation", "position", "club",
-                                       "league","age","birth_year",
+                                       "age","birth_year",
                                        "mins_per_90", "players_tackled",
                                        "tackles_won", "defensive_third_tackles",
                                        "middle_third_tackles",
@@ -202,7 +190,7 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                                        "tackles_and_interceptions",
                                        "clearances", "errors_leading_to_shots")
 
-  cleaned_names_possession <- c("player", "nation", "position", "club","league",
+  cleaned_names_possession <- c("player", "nation", "position", "club",
                                 "age","birth_year", "mins_per_90",
                                 "total_touches",
                                 "touches_defensive_penalty_box",
@@ -223,7 +211,7 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                                 "progressive_passes_received")
 
   cleaned_names_playing_time <- c("player", "nation", "position", "club",
-                                  "league","age","birth_year", "matches_played",
+                                  "age","birth_year", "matches_played",
                                   "minutes", "minutes_per_match",
                                   "percentage_squad_minutes_played",
                                   "mins_per_90", "starts",
@@ -239,7 +227,7 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
                                   "xg_performance_on_pitch_per90")
 
   cleaned_names_miscellanous <- c("player", "nation", "position", "club",
-                                  "league","age","birth_year", "mins_per_90",
+                                  "age","birth_year", "mins_per_90",
                                   "yellow_cards", "red_cards",
                                   "second_yellow_card", "fouls_committed",
                                   "fouls_drawn", "offsides", "crosses",
@@ -270,21 +258,42 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
     season <- valid_seasons[length(valid_seasons)]
   }
 
+  # If league not provided, default to english premier league
+  if (is.null(league)) {
+    league <- "premier_league"
+    code <- "9"
+    league_stats <- leagues[[league]]
+  }
+
+  # Check if league name is valid
+  if (!(league %in% names(leagues))) {
+    message('Invalid league name. Check the supported leagues with available_leagues()')
+    return(NULL)
+  }
+
+  # Reference league code from codes list
+  if (!is.null(league)) {
+    code <- codes[[league]]
+  } else {
+    message('Invalid league name. Check the supported leagues with available_leagues()')
+    return(NULL)
+  }
+
   # If type is not provided, set it to "standard"
   if (is.null(type)) {
     type <- 'standard'
   }
 
   # Check if the selected type is valid
-  if (!(type %in% names(type_to_selector))) {
-    message('Error: Unsuported type. Check available stats with stat_types()')
+  if (!(type %in% names(stats_abv))) {
+    message('Error: Unsupported type. Check available stats with stat_types()')
     return(NULL)
   }
 
 
   check_season <- function(season = NULL) {
-    valid_seasons <- c('2018/2019', '2019/2020','2020/2021', '2021/2022',
-                       '2022/2023', '2023/2024')
+    valid_seasons <- c('2018/2019', '2019/2020', '2020/2021',
+                       '2021/2022', '2022/2023', '2023/2024')
 
     # Normalize the season input
     normalized_season <- season
@@ -330,50 +339,83 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
     return(NULL)
   }
 
-  if (is.null(normalized_season)) {
-    message('Error: Invalid season input. Run available_seasons().')
-    return(NULL)
-  }
 
   if (identical(normalized_season, valid_seasons[length(valid_seasons)])) {
     # Use the type parameter to select the appropriate abbreviation
     abbreviation <- stats_abv[[type]]
+    #code <- codes[[code]]
+    league_stats <- leagues[[league]]
 
-    current_season_url <- paste0(base_url, code, abbreviation, spieler,
-                                 league_stats)
+    current_season_url <- paste0(base_url, code, '/', abbreviation, league_stats)
 
-    # Introduce a 5-second delay before making the request
+    rD <- RSelenium::rsDriver(browser="firefox", port=4555L, verbose=F, chromever = NULL)
+    remDr <- rD$client
+
+    # Navigate to the URL
+    remDr$navigate(current_season_url)
+
+    # delay intrtoduced for page to be fully loaded
     Sys.sleep(5)
 
-    page <- read_html(current_season_url)
+    # Extract the page source
+    page <- remDr$getPageSource()[[1]]
+
+    # Stop the RSelenium server
+    remDr$close()
+    rD$server$stop()
+
+    tryCatch({
+      page <- rvest::read_html(page)
+
+      df <- page |> rvest::html_table(fill = TRUE)
+      df <- df[[12]]
+
+      if (is.null(df)) {
+        stop('Error: Table could not be scraped. Kindly check input.')
+      }
+    })
 
   } else if (!identical(normalized_season, valid_seasons)) {
     normalized_season <- gsub('/', '-', normalized_season)
     abbreviation <- stats_abv[[type]]
+    #code <- codes[[code]]
+    league_stats <- leagues[[league]]
 
-    season_url <- paste0(base_url, code, normalized_season, '/', abbreviation,
-                         spieler, normalized_season, '-', league_stats)
+    season_url <- paste0(base_url, code, '/', normalized_season, '/', abbreviation,
+                         normalized_season, '-', league_stats)
 
-    # Introduce a 5-second delay before making the request
+
+    rD <- RSelenium::rsDriver(browser="firefox", port=4555L, verbose=F, chromever = NULL)
+    remDr <- rD$client
+
+    # Navigate to the URL
+    remDr$navigate(season_url)
+
+    # delay intrtoduced for page to be fully loaded
     Sys.sleep(5)
 
+    # Extract the page source
+    page <- remDr$getPageSource()[[1]]
 
-    page <- rvest::read_html(season_url)
+    # Stop the RSelenium server
+    remDr$close()
+    rD$server$stop()
+
   } else {
     message('Error: Unexpected webpage format.')
     return(NULL)
   }
 
-  selector <- type_to_selector[[type]]
+  tryCatch({
+    page <- rvest::read_html(page)
 
-  df <- page |>
-    rvest::html_node(selector) |>
-    rvest::html_table(fill = T)
+    df <- page |> rvest::html_table(fill = TRUE)
+    df <- df[[12]]
 
-  if (is.null(df)) {
-    message('Error: Web scraping failed. Check the URL or try again later.')
-    return(NULL)
-  }
+    if (is.null(df)) {
+      stop('Error: Web scraping failed. Check function input or try again later')
+    }
+  })
 
   header <- df[1, ]  # Get the header row
   colnames(df) <- header
@@ -416,3 +458,4 @@ fbref_big5_player_stats <- function(season = NULL, type = NULL) {
 
   return(df)
 }
+

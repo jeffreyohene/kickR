@@ -4,14 +4,12 @@
 \alias{fbref_team_stats}
 \title{Retrieve football team statistics from FBref}
 \arguments{
-\item{league}{The name of the football league (e.g., 'Premier League').
-
-Supported Leagues:}
+\item{league}{The league from which you want to retrieve data from}
 
 \item{season}{The season for which you want to retrieve statistics
 (e.g., '2021/2022'). If not provided, the current season is used.}
 
-\item{type}{The type of statistics you want to retrieve (e.g., 'standard',
+\item{type}{The type of metric you want to retrieve (e.g., 'standard',
 'goalkeeping'). If not provided, 'standard' statistics are used.}
 }
 \value{
@@ -22,12 +20,13 @@ This function retrieves football team statistics from FBref for a specified
 league, season, and type of statistics.
 }
 \examples{
-
+\dontrun{
 # Retrieve Premier League standard statistics for the current season
 fbref_team_stats(league = 'Premier League', type = 'standard')
 
 # Retrieve Bundesliga 2 shooting statistics for the 2022/2023 season
 fbref_team_stats(league = 'Bundesliga 2', season = '2022/2023', type = 'shooting')
+}
 
 }
 \seealso{
