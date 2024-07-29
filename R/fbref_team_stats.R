@@ -5,26 +5,27 @@
 #'
 #' @name fbref_team_stats
 #'
-#' @param league The name of the football league (e.g., 'Premier League').
+#' @param league The name of the football league (e.g., 'premier_league').
 #'
 #' Supported Leagues:
-# - Premier League
-# - Championship
-# - Serie A
-# - La Liga
-# - Segunda División
-# - Serie B
-# - Bundesliga
-# - Eredivisie
-# - Campeonato Brasileiro Série A
-# - Liga MX
-# - Primeira Liga
-# - Bundesliga 2
-# - Belgian Pro League
-# - Ligue 2
+# - Premier League: premier_league
+# - Championship: championship
+# - Serie A: serie_a
+# - La Liga: la_liga
+# - Segunda División: segunda_division
+# - Serie B: serie_b
+# - Bundesliga: bundesliga
+# - Eredivisie: eredivisie
+# - Campeonato Brasileiro Série A: br_serie_a
+# - Liga MX: liga_mx
+# - Primeira Liga: primera_liga
+# - Bundesliga 2: bundesliga_2
+# - Belgian Pro League: belgian_pro_league
+# - Ligue 2: ligue_2
+#' @param league The league from which you want to retrieve data from
 #' @param season The season for which you want to retrieve statistics
 #'    (e.g., '2021/2022'). If not provided, the current season is used.
-#' @param type The type of statistics you want to retrieve (e.g., 'standard',
+#' @param type The type of metric you want to retrieve (e.g., 'standard',
 #'   'goalkeeping'). If not provided, 'standard' statistics are used.
 #'
 #' @return A data frame containing the requested team statistics.
@@ -50,34 +51,10 @@ if (!requireNamespace("rvest", quietly = TRUE)) {
 }
 
 fbref_team_stats <- function(league = NULL, season = NULL, type = NULL) {
-
   base_url <- 'https://fbref.com/en/comps/'
 
-  # Define a mapping of league codes and league stats
-  league_to_code <- list(
-    'Premier League' = 9,
-    'Championship' = 10,
-    'Serie A' = 11,
-    'La Liga' = 12,
-    'Ligue 1' = 13,
-    'Segunda Division' = 17,
-    'Serie B' = 18,
-    'Bundesliga' = 20,
-    'Eredivisie' = 23,
-    'Campeonato Brasileiro Serie A' = 24,
-    'Liga MX' = 31,
-    'Primeira Liga' = 32,
-    'Bundesliga 2' = 33,
-    'Belgian_pro_league' = 37,
-    'Ligue 2' = 60
-  )
-
-  # Dynamic URL handling
-  league_filter <- c('Campeonato Brasileiro Serie A', 'Bundesliga 2')
-
-  # Define valid seasons
-  valid_seasons <- c('2018/2019', '2019/2020','2020/2021', '2021/2022',
-                     '2022/2023', '2023/2024')
+  valid_seasons <- c('2018/2019', '2019/2020','2020/2021',
+                     '2021/2022', '2022/2023', '2023/2024', '2024/2025')
 
   # Define a mapping of type values to CSS selectors
   type_to_selector <- list(
@@ -94,193 +71,230 @@ fbref_team_stats <- function(league = NULL, season = NULL, type = NULL) {
     miscellaneous = '#stats_squads_misc_for'
   )
 
+  # league codes
+  codes <- list(
+    premier_league = '9',
+    championship = '10',
+    serie_a = '11',
+    la_liga = '12',
+    ligue_1 = '13',
+    segunda_division = '17',
+    serie_b = '18',
+    bundesliga = '20',
+    mls = '22',
+    eredivisie = '23',
+    br_serie_a = '24',
+    liga_mx = '31',
+    primera_liga = '32',
+    bundesliga_2 = '33',
+    belgian_pro_league = '37',
+    ligue_2 = '60'
+  )
+
+  # league suffixes
+  leagues <- list(
+    premier_league = 'Premier-League-Stats',
+    championship = 'Championship-Stats',
+    serie_a = 'Serie-A-Stats',
+    la_liga = 'La-Liga-Stats',
+    ligue_1 = 'Ligue-1-Stats',
+    segunda_division = 'Segunda-Division-Stats',
+    serie_b = 'Serie-B-Stats',
+    bundesliga = 'Bundesliga-Stats',
+    mls = 'Major-League-Soccer-Stats',
+    eredivisie = 'Eredivisie-Stats',
+    br_serie_a = 'Serie-A-Stats',
+    liga_mx = 'Liga-MX-Stats',
+    primera_liga = 'Primeira-Liga-Stats',
+    bundesliga_2 = '2-Bundesliga-Stats',
+    belgian_pro_league = 'Belgian-Pro-League-Stats',
+    ligue_2 = 'Ligue-2-Stats'
+  )
+
   # Define the expected vectors for each data type
   standard <- c(
-    "Squad", "# Pl", "Age", "Poss", "MP", "Starts", "Min", "90s", "Gls", "Ast",
-    "G+A","G-PK", "PK", "PKatt", "CrdY", "CrdR", "xG", "npxG", "xAG",
-    "npxG+xAG", "PrgC", "PrgP", "Gls", "Ast", "G+A", "G-PK", "G+A-PK", "xG",
-    "xAG", "xG+xAG", "npxG", "npxG+xAG"
+    'Squad', '# Pl', 'Age', 'Poss', 'MP', 'Starts', 'Min', '90s', 'Gls', 'Ast',
+    'G+A', 'G-PK', 'PK', 'PKatt', 'CrdY', 'CrdR', 'xG', 'npxG', 'xAG',
+    'npxG+xAG', 'PrgC', 'PrgP', 'Gls', 'Ast', 'G+A', 'G-PK', 'G+A-PK', 'xG',
+    'xAG', 'xG+xAG', 'npxG', 'npxG+xAG'
   )
 
   goalkeeping <- c(
-    "Squad", "# Pl", "MP", "Starts", "Min", "90s", "GA", "GA90", "SoTA",
-    "Saves", "Save%", "W", "D", "L", "CS", "CS%", "PKatt", "PKA", "PKsv",
-    "PKm", "Save%"
+    'Squad', '# Pl', 'MP', 'Starts', 'Min', '90s', 'GA', 'GA90', 'SoTA',
+    'Saves', 'Save%', 'W', 'D', 'L', 'CS', 'CS%', 'PKatt', 'PKA', 'PKsv',
+    'PKm', 'Save%'
   )
 
   advanced_goalkeeping <- c(
-    "Squad", "# Pl", "90s", "GA", "PKA", "FK", "CK", "OG", "PSxG", "PSxG/SoT",
-    "PSxG+/-", "/90", "Cmp", "Att", "Cmp%", "Att", "Thr", "Launch%", "AvgLen",
-    "Att", "Launch%","AvgLen", "Opp", "Stp", "Stp%", "#OPA", "#OPA/90",
-    "AvgDist"
+    'Squad', '# Pl', '90s', 'GA', 'PKA', 'FK', 'CK', 'OG', 'PSxG', 'PSxG/SoT',
+    'PSxG+/-', '/90', 'Cmp', 'Att', 'Cmp%', 'Att', 'Thr', 'Launch%', 'AvgLen',
+    'Att', 'Launch%', 'AvgLen', 'Opp', 'Stp', 'Stp%', '#OPA', '#OPA/90',
+    'AvgDist'
   )
 
   shooting <- c(
-    "Squad", "# Pl", "90s", "Gls", "Sh", "SoT", "SoT%", "Sh/90", "SoT/90",
-    "G/Sh", "G/SoT", "Dist", "FK", "PK", "PKatt", "xG", "npxG", "npxG/Sh",
-    "G-xG", "np:G-xG"
+    'Squad', '# Pl', '90s', 'Gls', 'Sh', 'SoT', 'SoT%', 'Sh/90', 'SoT/90',
+    'G/Sh', 'G/SoT', 'Dist', 'FK', 'PK', 'PKatt', 'xG', 'npxG', 'npxG/Sh',
+    'G-xG', 'np:G-xG'
   )
 
   passing <- c(
-    "Squad", "# Pl", "90s", "Cmp", "Att", "Cmp%", "TotDist", "PrgDist", "Cmp",
-    "Att", "Cmp%", "Cmp", "Att", "Cmp%", "Cmp", "Att", "Cmp%", "Ast", "xAG",
-    "xA", "A-xAG", "KP", "1/3", "PPA", "CrsPA", "PrgP"
+    'Squad', '# Pl', '90s', 'Cmp', 'Att', 'Cmp%', 'TotDist', 'PrgDist', 'Cmp',
+    'Att', 'Cmp%', 'Cmp', 'Att', 'Cmp%', 'Cmp', 'Att', 'Cmp%', 'Ast', 'xAG',
+    'xA', 'A-xAG', 'KP', '1/3', 'PPA', 'CrsPA', 'PrgP'
   )
 
   pass_types <- c(
-    "Squad", "# Pl", "90s", "Att", "Live", "Dead", "FK", "TB", "Sw", "Crs",
-    "TI", "CK", "In", "Out", "Str", "Cmp", "Off", "Blocks"
+    'Squad', '# Pl', '90s', 'Att', 'Live', 'Dead', 'FK', 'TB', 'Sw', 'Crs',
+    'TI', 'CK', 'In', 'Out', 'Str', 'Cmp', 'Off', 'Blocks'
   )
 
   goal_creation <- c(
-    "Squad", "# Pl", "90s", "SCA", "SCA90", "PassLive", "PassDead", "TO", "Sh",
-    "Fld", "Def", "GCA", "GCA90", "PassLive", "PassDead", "TO", "Sh", "Fld",
-    "Def"
+    'Squad', '# Pl', '90s', 'SCA', 'SCA90', 'PassLive', 'PassDead', 'TO', 'Sh',
+    'Fld', 'Def', 'GCA', 'GCA90', 'PassLive', 'PassDead', 'TO', 'Sh', 'Fld',
+    'Def'
   )
 
   defensive_actions <- c(
-    "Squad", "# Pl", "90s", "Tkl", "TklW", "Def 3rd", "Mid 3rd", "Att 3rd",
-    "Tkl", "Att", "Tkl%", "Lost", "Blocks", "Sh", "Pass", "Int", "Tkl+Int",
-    "Clr", "Err"
+    'Squad', '# Pl', '90s', 'Tkl', 'TklW', 'Def 3rd', 'Mid 3rd', 'Att 3rd',
+    'Tkl', 'Att', 'Tkl%', 'Lost', 'Blocks', 'Sh', 'Pass', 'Int', 'Tkl+Int',
+    'Clr', 'Err'
   )
 
   possession <- c(
-    "Squad", "# Pl", "Poss", "90s", "Touches", "Def Pen", "Def 3rd", "Mid 3rd",
-    "Att 3rd", "Att Pen", "Live", "Att", "Succ", "Succ%", "Tkld", "Tkld%",
-    "Carries", "TotDist", "PrgDist", "PrgC", "1/3", "CPA", "Mis", "Dis", "Rec",
-    "PrgR"
+    'Squad', '# Pl', 'Poss', '90s', 'Touches', 'Def Pen', 'Def 3rd', 'Mid 3rd',
+    'Att 3rd', 'Att Pen', 'Live', 'Att', 'Succ', 'Succ%', 'Tkld', 'Tkld%',
+    'Carries', 'TotDist', 'PrgDist', 'PrgC', '1/3', 'CPA', 'Mis', 'Dis', 'Rec',
+    'PrgR'
   )
 
   playing_time <- c(
-    "Squad", "# Pl", "Age", "MP", "Min", "Mn/MP", "Min%", "90s", "Starts",
-    "Mn/Start", "Compl", "Subs", "Mn/Sub", "unSub", "PPM", "onG", "onGA",
-    "+/-", "+/-90", "onxG", "onxGA", "xG+/-", "xG+/-90"
+    'Squad', '# Pl', 'Age', 'MP', 'Min', 'Mn/MP', 'Min%', '90s', 'Starts',
+    'Mn/Start', 'Compl', 'Subs', 'Mn/Sub', 'unSub', 'PPM', 'onG', 'onGA',
+    '+/-', '+/-90', 'onxG', 'onxGA', 'xG+/-', 'xG+/-90'
   )
 
   miscellaneous <- c(
-    "Squad", "# Pl", "90s", "CrdY", "CrdR", "2CrdY", "Fls", "Fld", "Off", "Crs",
-    "Int", "TklW", "PKwon", "PKcon", "OG", "Recov", "Won", "Lost", "Won%"
+    'Squad', '# Pl', '90s', 'CrdY', 'CrdR', '2CrdY', 'Fls', 'Fld', 'Off', 'Crs',
+    'Int', 'TklW', 'PKwon', 'PKcon', 'OG', 'Recov', 'Won', 'Lost', 'Won%'
   )
-
 
   # Cleaned names
   cleaned_names_standard <- c(
-    "club", "number_of_players_used", "average_age","possession",
-    "matches_played", "starts", "minutes","mins_per_90", "goals", "assists",
-    "goals_and_assists","non_penalty_goals", "penalties",
-    "penalty_kick_attempts","yellow_cards", "red_cards", "xG", "npxG", "xAG",
-    "npxG+xAG", "progressive_carries", "progressive_passes","goals_per90",
-    "assists_per90", "goals_and_assists_per90","non_penalty_goals_per90",
-    "non_penalty_goals_and_assists_per90","xg_per90","xag_per90",
-    "xg_and_xag_per90", "npxg_per90","npxg_and_xag_per90"
+    'club', 'number_of_players_used', 'average_age', 'possession',
+    'matches_played', 'starts', 'minutes', 'mins_per_90', 'goals', 'assists',
+    'goals_and_assists', 'non_penalty_goals', 'penalties',
+    'penalty_kick_attempts', 'yellow_cards', 'red_cards', 'xG', 'npxG', 'xAG',
+    'npxG+xAG', 'progressive_carries', 'progressive_passes', 'goals_per90',
+    'assists_per90', 'goals_and_assists_per90', 'non_penalty_goals_per90',
+    'non_penalty_goals_and_assists_per90', 'xg_per90', 'xag_per90',
+    'xg_and_xag_per90', 'npxg_per90', 'npxg_and_xag_per90'
   )
 
   cleaned_names_goalkeeping <- c(
-    "club", "league", "matches_played", "squad", "total_minutes_played",
-    "mins_per_90", "goals_against", "goals_against_per90",
-    "shots_on_target_against", "saves", "save_percentage", "wins", "draws",
-    "losses", "clean_sheets", "clean_sheet_percentage", "penalties_attempted",
-    "penalty_kicks_allowed", "penalty_kicks_saved", "penalty_kicks_missed",
-    "penalty_kicks_save_percentage"
+    'club', 'league', 'matches_played', 'squad', 'total_minutes_played',
+    'mins_per_90', 'goals_against', 'goals_against_per90',
+    'shots_on_target_against', 'saves', 'save_percentage', 'wins', 'draws',
+    'losses', 'clean_sheets', 'clean_sheet_percentage', 'penalties_attempted',
+    'penalty_kicks_allowed', 'penalty_kicks_saved', 'penalty_kicks_missed',
+    'penalty_kicks_save_percentage'
   )
 
   cleaned_names_adv_goalkeeping <- c(
-    "club", "number_of_players_used", "mins_per_90", "goals_against",
-    "penalty_kicks_allowed", "free_kick_goals_against",
-    "corner_kick_goals_against", "own_goals_against", "PSxG",
-    "PSxG_per_shot_on_target", "PSxG_minus_goals_allowed",
-    "PSxG_minus_goals_allowed_per90", "launched_passes_completed",
-    "launched_passes_attempted", "launched_passes_completion_pct",
-    "passes_attempted", "throws_attempted","percentage_passes_launched",
-    "avg_pass_length", "goal_kicks", "percentage_goal_kicks_launched",
-    "avg_goal_kick_length", "crosses_faced", "crosses_stopped",
-    "percentage_crosses_stopped", "defensive_actions_outside_penalty_box",
-    "defensive_actions_outside_penalty_box_per90",
-    "defensive_actions_outside_penalty_box_avg_dist"
+    'club', 'number_of_players_used', 'mins_per_90', 'goals_against',
+    'penalty_kicks_allowed', 'free_kick_goals_against',
+    'corner_kick_goals_against', 'own_goals_against', 'PSxG',
+    'PSxG_per_shot_on_target', 'PSxG_minus_goals_allowed',
+    'PSxG_minus_goals_allowed_per90', 'launched_passes_completed',
+    'launched_passes_attempted', 'launched_passes_completion_pct',
+    'passes_attempted', 'throws_attempted', 'percentage_passes_launched',
+    'avg_pass_length', 'goal_kicks', 'percentage_goal_kicks_launched',
+    'avg_goal_kick_length', 'crosses_faced', 'crosses_stopped',
+    'percentage_crosses_stopped', 'defensive_actions_outside_penalty_box',
+    'defensive_actions_outside_penalty_box_per90',
+    'defensive_actions_outside_penalty_box_avg_dist'
   )
 
   cleaned_names_shooting <- c(
-    "club", "number_of_players_used", "mins_per_90", "goals_against",
-    "shots", "shots_on_target", "shots_on_target_percentage",
-    "shots_per90", "shots_on_target_per90", "goals_per_shot",
-    "goals_per_shot_on_target", "average_shot_distance", "free_kick_shots",
-    "penalty_kicks_converted", "penalty_kicks_attempted", "xG",
-    "npxG", "npxG_per_shot", "xg_performance", "npxg_performance"
+    'club', 'number_of_players_used', 'mins_per_90', 'goals_against',
+    'shots', 'shots_on_target', 'shots_on_target_percentage',
+    'shots_per90', 'shots_on_target_per90', 'goals_per_shot',
+    'goals_per_shot_on_target', 'average_shot_distance', 'free_kick_shots',
+    'penalty_kicks_converted', 'penalty_kicks_attempted', 'xG',
+    'npxG', 'npxG_per_shot', 'xg_performance', 'npxg_performance'
   )
 
   cleaned_names_passing <- c(
-    "club", "number_of_players_used", "mins_per_90", "total_passes_completed",
-    "total_passes_attempted", "pass_completion_percentage",
-    "total_passing_distance", "total_progressive_distance",
-    "short_passes_completed", "short_passes_attempted",
-    "short_pass_completion_percentage", "medium_passes_completed",
-    "medium_passes_attempted", "medium_pass_completion_percentage",
-    "long_passes_completed", "long_passes_attempted",
-    "long_pass_completion_percentage", "assists", "xAG", "xA",
-    "xag_performance", "key_passes", "passes_into_final_third",
-    "passes_into_penalty_box", "crosses_into_penalty_box",
-    "progressive_passes"
+    'club', 'number_of_players_used', 'mins_per_90', 'total_passes_completed',
+    'total_passes_attempted', 'pass_completion_percentage',
+    'total_passing_distance', 'total_progressive_distance',
+    'short_passes_completed', 'short_passes_attempted',
+    'short_pass_completion_percentage', 'medium_passes_completed',
+    'medium_passes_attempted', 'medium_pass_completion_percentage',
+    'long_passes_completed', 'long_passes_attempted',
+    'long_pass_completion_percentage', 'assists', 'xAG', 'xA',
+    'xag_performance', 'key_passes', 'passes_into_final_third',
+    'passes_into_penalty_box', 'crosses_into_penalty_box',
+    'progressive_passes'
   )
 
   cleaned_names_pass_types <- c(
-    "club", "number_of_players_used", "mins_per_90", "total_passes_attempted",
-    "live_ball_passes", "dead_ball_passes", "passes_from_free_kicks",
-    "through_balls", "switches", "crosses", "throw_ins", "corner_kicks",
-    "inswinging_corner_kicks", "outswinging_corner_kicks",
-    "straight_corner_kicks", "passes_completed", "passes_offside", "blocks"
+    'club', 'number_of_players_used', 'mins_per_90', 'total_passes_attempted',
+    'live_ball_passes', 'dead_ball_passes', 'passes_from_free_kicks',
+    'through_balls', 'switches', 'crosses', 'throw_ins', 'corner_kicks',
+    'inswinging_corner_kicks', 'outswinging_corner_kicks',
+    'straight_corner_kicks', 'passes_completed', 'passes_offside', 'blocks'
   )
 
   cleaned_names_goal_creation <- c(
-    "club", "number_of_players_used", "mins_per_90", "shot_creating_actions",
-    "shot_creating_actions_per90", "sca_live_passes", "sca_dead_passes",
-    "sca_take_ons", "sca_shots", "sca_fouls", "sca_defensive_actions",
-    "goal_creating_actions", "goal_creating_actions_per90", "gca_live_passes",
-    "gca_dead_passes", "gca_take_ons", "gca_shots", "gca_fouls",
-    "gca_defensive_actions"
+    'club', 'number_of_players_used', 'mins_per_90', 'shot_creating_actions',
+    'shot_creating_actions_per90', 'sca_live_passes', 'sca_dead_passes',
+    'sca_take_ons', 'sca_shots', 'sca_fouls', 'sca_defensive_actions',
+    'goal_creating_actions', 'goal_creating_actions_per90', 'gca_live_passes',
+    'gca_dead_passes', 'gca_take_ons', 'gca_shots', 'gca_fouls',
+    'gca_defensive_actions'
   )
 
   cleaned_names_defensive_actions <- c(
-    "club", "number_of_players_used", "mins_per_90", "players_tackled",
-    "tackles_won", "defensive_third_tackles", "middle_third_tackles",
-    "final_third_tackles","dribblers_tackled", "dribbles_challenged",
-    "percentage_of_dribblers_tackled", "challenges_lost",
-    "total_blocks", "shots_blocked", "passes_blocked", "interceptions",
-    "tackles_and_interceptions", "clearances", "errors_leading_to_shots"
+    'club', 'number_of_players_used', 'mins_per_90', 'players_tackled',
+    'tackles_won', 'defensive_third_tackles', 'middle_third_tackles',
+    'final_third_tackles', 'dribblers_tackled', 'dribbles_challenged',
+    'percentage_of dribblers_tackled', 'challenges_lost',
+    'total_blocks', 'shots_blocked', 'passes_blocked', 'interceptions',
+    'tackles_and_interceptions', 'clearances', 'errors_leading_to_shots'
   )
 
   cleaned_names_possession <- c(
-    "club", "number_of_players_used", "possession", "mins_per_90",
-    "total_touches", "touches_defensive_penalty_box", "touches_defensive_third",
-    "touches_middle_third", "touches_final_third",
-    "touches_attacking_penalty_box", "inplay_touches", "take_ons_attempted",
-    "successful_take_ons", "successful_take_on_percentage",
-    "tackles_during_take_on", "tackles_during_take_on_percentage", "carries",
-    "total_carrying_distance", "progressive_carrying_distance",
-    "progressive_carries","carries_into_final_third",
-    "carries_into_penalty_box", "miscontrols", "dispossessions",
-    "passes_received", "progressive_passes_received"
+    'club', 'number_of_players_used', 'possession', 'mins_per_90',
+    'total_touches', 'touches_defensive_penalty_box', 'touches_defensive_third',
+    'touches_middle_third', 'touches_final_third',
+    'touches_attacking_penalty_box', 'inplay_touches', 'take_ons_attempted',
+    'successful_take_ons', 'successful_take_on_percentage',
+    'tackles_during_take_on', 'tackles_during_take_on_percentage', 'carries',
+    'total_carrying_distance', 'progressive_carrying_distance',
+    'progressive_carries', 'carries_into_final_third',
+    'carries_into_penalty_box', 'miscontrols', 'dispossessions',
+    'passes_received', 'progressive_passes_received'
   )
 
   cleaned_names_playing_time <- c(
-    "club", "number_of_players_used", "average_age", "matches_played",
-    "minutes", "minutes_per_match", "percentage_squad_minutes_played",
-    "mins_per_90", "starts", "minutes_per_matches_played",
-    "complete_matches_played", "substitutions", "minutes_per_substitution",
-    "unused_subs", "points_per_match", "goals_scored_on_pitch",
-    "goals_conceded_on_pitch", "goals_scored_minus_goals_conceded_on_pitch",
-    "goals_scored_minus_goals_conceded_on_pitch_per90", "xg_onpitch",
-    "xg_against_on_pitch", "xg_performance_on_pitch",
-    "xg_performance_on_pitch_per90"
+    'club', 'number_of_players_used', 'average_age', 'matches_played',
+    'minutes', 'minutes_per_match', 'percentage_squad_minutes_played',
+    'mins_per_90', 'starts', 'minutes_per_matches_played',
+    'complete_matches_played', 'substitutions', 'minutes_per_substitution',
+    'unused_subs', 'points_per_match', 'goals_scored_on_pitch',
+    'goals_conceded_on_pitch', 'goals_scored_minus_goals_conceded'
   )
 
   cleaned_names_miscellanous <- c(
-    "club", "number_of_players_used", "mins_per_90", "yellow_cards",
-    "red_cards", "second_yellow_card", "fouls_committed", "fouls_drawn",
-    "offsides", "crosses", "interceptions", "tackles_won",
-    "penalty_kicks_won", "penalty_kicks_conceded", "own_goals",
-    "recoveries", "aerial_duels_won", "aerial_duels_lost",
-    "aerial_duels_win_percentage"
+    'club', 'number_of_players_used', 'mins_per_90', 'yellow_cards',
+    'red_cards', 'second_yellow_card', 'fouls_committed', 'fouls_drawn',
+    'offsides', 'crosses', 'interceptions', 'tackles_won',
+    'penalty_kicks_won', 'penalty_kicks_conceded', 'own_goals',
+    'recoveries', 'aerial_duels_won', 'aerial_duels_lost',
+    'aerial_duels_win_percentage'
   )
+
 
   colnames_list <- list(
     cleaned_names_standard,
@@ -296,6 +310,30 @@ fbref_team_stats <- function(league = NULL, season = NULL, type = NULL) {
     cleaned_names_miscellanous
   )
 
+  # Dynamic URL handling
+  #league_filter <- c('Campeonato Brasileiro Serie A', 'Bundesliga 2')
+
+  # If league not provided, default to english premier league
+  if (is.null(league)) {
+    league <- "premier_league"
+    code <- "9"
+    league_stats <- leagues[[league]]
+  }
+
+  # Check if league name is valid
+  if (!(league %in% names(leagues))) {
+    message('Invalid league name. Check the supported leagues with available_leagues()')
+    return(NULL)
+  }
+
+  # Reference league code from codes list
+  if (!is.null(league)) {
+    code <- codes[[league]]
+  } else {
+    message('Invalid league name. Check the supported leagues with available_leagues()')
+    return(NULL)
+  }
+
   # If season is not provided, set it to the current season
   if (is.null(season)) {
     season <- valid_seasons[length(valid_seasons)]
@@ -303,26 +341,18 @@ fbref_team_stats <- function(league = NULL, season = NULL, type = NULL) {
 
   # If type is not provided, set it to "standard"
   if (is.null(type)) {
-    type <- "standard"
+    type <- 'standard'
   }
 
-  # Check if the selected type is valid
+  # Check if type is valid
   if (!(type %in% names(type_to_selector))) {
-    message('Unsuported type. Check available stats with stat_types()')
-    return(NULL)
-  }
-
-  # If league is not provided, set it to "premier_league"
-  if (is.null(league)) {
-    league <- "Premier League"
-  } else if (!(league %in% names(league_to_code))) {
-    message('Data unavailable for this league. Run: available_leagues()')
+    message('Invalid type. Please provide a valid type.')
     return(NULL)
   }
 
   check_season <- function(season = NULL) {
-    valid_seasons <- c('2018/2019', '2019/2020','2020/2021', '2021/2022',
-                       '2022/2023', '2023/2024')
+    valid_seasons <- c('2018/2019', '2019/2020','2020/2021',
+                       '2021/2022', '2022/2023', '2023/2024', '2024/2025')
 
     # Normalize the season input
     normalized_season <- season
@@ -364,14 +394,12 @@ fbref_team_stats <- function(league = NULL, season = NULL, type = NULL) {
   normalized_season <- check_season(season)
 
   if (is.null(normalized_season)) {
-    message('Invalid season. Run available_seasons().')
+    message('Invalid season or season not provided.')
     return(NULL)
   }
 
-  if (identical(normalized_season, valid_seasons[length(valid_seasons)]) & !(league %in% league_filter)) {
-    code <- league_to_code[[league]]
-    league <- gsub('_', ' ', league) |> tools::toTitleCase()
-    league_stats <- paste0(gsub(' ', '-', league), '-Stats')
+  if (identical(normalized_season, valid_seasons[length(valid_seasons)])) {
+    league_stats <- leagues[[league]]
 
     current_season_url <- paste0(base_url, code, '/', league_stats)
 
@@ -379,72 +407,31 @@ fbref_team_stats <- function(league = NULL, season = NULL, type = NULL) {
     Sys.sleep(5)
 
     page <- rvest::read_html(current_season_url)
-  } else if (!identical(normalized_season, valid_seasons) & !(league %in% league_filter)) {
-    normalized_season <- gsub('/', '-', normalized_season)
+  }
 
-    code <- league_to_code[[league]]
-    league <- gsub('_', ' ', league) |> tools::toTitleCase()
-    league_stats <- paste0(gsub(' ', '-', league), '-Stats')
-
-    season_url <- paste0(base_url, code, '/', normalized_season, '/', normalized_season, '-', league_stats)
+  else {
+    league_stats <- leagues[[league]]
+    normalized_season <- gsub('/','-', normalized_season)
+    season_url <- paste0(base_url, code, '/', normalized_season, '/',
+                         normalized_season, '-', league_stats)
 
     # Introduce a 5-second delay before making the request
     Sys.sleep(5)
 
     page <- rvest::read_html(season_url)
-  } else if (identical(normalized_season, valid_seasons[length(valid_seasons)]) & league %in% league_filter) {
-    normalized_season <- gsub('/', '-', normalized_season)
-    if (league == 'Bundesliga 2') {
-      code <- league_to_code[[league]]
-      league_stats <- '2-Bundesliga-Stats'
+  }
 
-      current_season_url <- paste0(base_url, code, '/', league_stats)
+  if (is.null(page)) {
+    message('Error: Web scraping failed. Check the URL or try again later.')
+  }
 
-      # Introduce a 5-second delay before making the request
-      Sys.sleep(5)
+  else {
+    selector <- type_to_selector[[type]]
 
-      page <- rvest::read_html(current_season_url)
-    } else if (league == 'Campeonato Brasileiro Serie A') {
-      code <- league_to_code[[league]]
-      league_stats <- 'Serie-A-Stats'
+    df <- page |>
+      rvest::html_node(selector) |>
+      rvest::html_table(fill = TRUE)
 
-      current_season_url <- paste0(base_url, code, '/', league_stats)
-
-      # Introduce a 5-second delay before making the request
-      Sys.sleep(5)
-
-      page <- rvest::read_html(current_season_url)
-    } else {
-      message('Current Serie A/ Bundesliga 2')
-      return(NULL)
-    }
-  } else if (!identical(normalized_season, valid_seasons) & league %in% league_filter) {
-    normalized_season <- gsub('/', '-', normalized_season)
-    if (league == 'Bundesliga 2') {
-      code <- league_to_code[[league]]
-      league_stats <- '2-Bundesliga-Stats'
-
-      season_url <- paste0(base_url, code, '/', normalized_season, '/', normalized_season, '-', league_stats)
-
-      # Introduce a 5-second delay before making the request
-      Sys.sleep(5)
-
-      page <- rvest::read_html(season_url)
-    } else if (league == 'Campeonato Brasileiro Serie A') {
-      code <- league_to_code[[league]]
-      league_stats <- 'Serie-A-Stats'
-
-      season_url <- paste0(base_url, code, '/', normalized_season, '/', normalized_season, '-', league_stats)
-
-      # Introduce a 5-second delay before making the request
-      Sys.sleep(5)
-
-      page <- rvest::read_html(season_url)
-    } else {
-      return(message('Error: Check Serie A/ Bundesliga 2'))
-    }
-  } else {
-    message('Invalid input. Check inputs.')
   }
 
   selector <- type_to_selector[[type]]
@@ -454,43 +441,46 @@ fbref_team_stats <- function(league = NULL, season = NULL, type = NULL) {
     rvest::html_table(fill = TRUE)
 
   if (is.null(df)) {
-    message('Error: Web scraping failed. Check the URL or try again later.')
+    message('Error: Target table not found.')
     return(NULL)
   }
 
-  header <- df[1, ]  # Get the header row
-  colnames(df) <- header
-  df <- df[-1, ]
+  else {
+    header <- df[1, ]  # Get the header row
+    colnames(df) <- header
+    df <- df[-1, ]
 
-  # Select the appropriate column names based on the type
-  if (type == 'standard') {
-    column <- cleaned_names_standard
-  } else if (type == 'goalkeeping') {
-    column <- cleaned_names_goalkeeping
-  } else if (type == 'advanced_goalkeeping') {
-    column <- cleaned_names_adv_goalkeeping
-  } else if (type == 'shooting') {
-    column <- cleaned_names_shooting
-  } else if (type == 'passing') {
-    column <- cleaned_names_passing
-  } else if (type == 'pass_types') {
-    column <- cleaned_names_pass_types
-  } else if (type == 'goal_creation') {
-    column <- cleaned_names_goal_creation
-  } else if (type == 'defensive_actions') {
-    column <- cleaned_names_defensive_actions
-  } else if (type == 'possession') {
-    column <- cleaned_names_possession
-  } else if (type == 'playing_time') {
-    column <- cleaned_names_playing_time
-  } else if (type == 'miscellaneous') {
-    column <- cleaned_names_miscellanous
-  } else {
-    return(NULL)
-    message('Could not assign column names.')
+    # Select the appropriate column names based on the type
+    if (type == 'standard') {
+      column <- cleaned_names_standard
+    } else if (type == 'goalkeeping') {
+      column <- cleaned_names_goalkeeping
+    } else if (type == 'advanced_goalkeeping') {
+      column <- cleaned_names_adv_goalkeeping
+    } else if (type == 'shooting') {
+      column <- cleaned_names_shooting
+    } else if (type == 'passing') {
+      column <- cleaned_names_passing
+    } else if (type == 'pass_types') {
+      column <- cleaned_names_pass_types
+    } else if (type == 'goal_creation') {
+      column <- cleaned_names_goal_creation
+    } else if (type == 'defensive_actions') {
+      column <- cleaned_names_defensive_actions
+    } else if (type == 'possession') {
+      column <- cleaned_names_possession
+    } else if (type == 'playing_time') {
+      column <- cleaned_names_playing_time
+    } else if (type == 'miscellaneous') {
+      column <- cleaned_names_miscellanous
+    } else {
+      return(NULL)
+      message('Could not assign column names.')
+    }
+
+
+    colnames(df) <- column
   }
-
-  colnames(df) <- column
 
   return(df)
 }

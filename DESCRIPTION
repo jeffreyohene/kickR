@@ -16,5 +16,7 @@ LazyData: true
 Imports:
     jsonlite,
     rvest,
-    openxlsx
+    openxlsx,
+    RSelenium
+Additional_repositories: inst
 RoxygenNote: 7.2.3

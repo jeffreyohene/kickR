@@ -4,14 +4,12 @@
 \alias{fbref_team_stats}
 \title{Retrieve football team statistics from FBref}
 \arguments{
-\item{league}{The name of the football league (e.g., 'Premier League').
-
-Supported Leagues:}
+\item{league}{The league from which you want to retrieve data from}
 
 \item{season}{The season for which you want to retrieve statistics
 (e.g., '2021/2022'). If not provided, the current season is used.}
 
-\item{type}{The type of statistics you want to retrieve (e.g., 'standard',
+\item{type}{The type of metric you want to retrieve (e.g., 'standard',
 'goalkeeping'). If not provided, 'standard' statistics are used.}
 }
 \value{
