@@ -1,7 +1,7 @@
 ---
 title: kickR 1.0.0
 ---
-
+## Docmentation for functions will be updated by 16th July
 
 ![](https://img.icons8.com/?size=128&id=wQQxHKGXFPhn&format=png)
 
