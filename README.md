@@ -7,7 +7,15 @@ title: kickR 1.0.0
 
 ## Overview
 
-**kickR** is a comprehensive R package designed for football analytics and web scraping of football metrics from FBRef. Whether you're an analyst, data scientist, or a football enthusiast, kickR provides you with the tools to access player and team statistics from various football leagues. This package includes features to scrape data from websites like FBRef and other sources, making it easy to gather football metrics for your analysis and/or data vizzes.
+**kickR** is a comprehensive R package designed for web scraping of football metrics from [FBRef](fbref.com). Whether you're an analyst, data scientist, or a football enthusiast, kickR provides you with the tools to access player and team statistics from various football leagues around the world. This package makes it easy to gather football metrics for your analysis and/or data vizzes.
+
+kickR is written in the R programming language and to get started, if you have never used R before, you will have to download and install R and RStudio here for your computer by selecting the OS you use:
+- [R](https://cran.r-project.org/bin/)
+- [RStudio](https://posit.co/download/rstudio-desktop/)
+
+If you are more comfortable in other programming languages like Python, you can scrape the data you need here in R and there are functions kickR provides that help you save the scraped data and export it to continue your analysis or use the data for the visualizations you want to work with.
+
+For some examples as to what you can do with kickR data, kindly check this [repo](https://github.com/jeffreyohene/Football-Analytics) out.
 
 ## Features
 
@@ -33,7 +41,7 @@ title: kickR 1.0.0
   FBRef has metrics grouped under 9 categories which are listed with the top metrics for each category below:
   - Standard: General team metrics, xG, npxG, xG performance
   - Goalkeeping: Clean sheets, save percentage, goals conceded
-  - Advanced Goalkeeping: Free kick and corner kick goals conceded, post shot expected goals(PSxG), PSxG         performance, average passing length, goal kicks breakdown, crosses faced and crosses stopped an sweeping metrics.
+  - Advanced Goalkeeping: Free kick and corner kick goals conceded, post shot expected goals(PSxG), PSxG performance, average passing length, goal kicks breakdown, crosses faced and crosses stopped an sweeping metrics.
   - Shooting: Goals, shots and shots on target, average shot distance, xG and npxG performance.
   - Passing: Total passes, pass blength breakdown, total passing distance, total progressive passing distance, pass length breakdown(attempted, completed and completion rates of shor, medium and long passes), final third passes, expected assisted goals, expected assists, key passes, final third passes and crosses and passes into the penalty area.
   - Pass Types: Switches, throw ins, through balls, crosses, live in-play and dead passes, in and out-swinging corner kicks and passes offside.
@@ -44,9 +52,9 @@ title: kickR 1.0.0
   - Miscellaneous: disciplinary record, fouls made and drawn, ball recoveries and offsides
   
   
-- **Data Export**: Export your data to common formats for further analysis or sharing.
+- **Data Export**: After scraping data, you can export it as a .rds file if you use R or as a .csv, .xlsx or .json file.
 
-- **Upcoming Features**: With our next version we will introduce features such as modelling metrics for enhanced scouting and performance analysis and player similarity identification using performance metrics.
+- **Additional Feature**: kickR also has a function for calculating player/team similarity using the find_similar_players and find_similar_teams functions. This can help you scout players and teams who play in a certain way. Note that, similarity does not directly equate to style. Two players when compared for their touches in possession, touches in the middle third and carries made can be considered similar but their playing style may differ.
 
 - **Open Source**: kickR is open-source software distributed under the MIT License.
 
@@ -62,370 +70,357 @@ if (!requireNamespace('devtools', quietly = T)) {
 devtools::install_github('jeffreyohene/kickR')
 
 ```
-## How to Scrape Top 5 League Stats
 
-To scrape statistics for the top 5 football leagues (English Premier League, La Liga, Bundesliga, Serie A, and Ligue 1) using `kickR`, follow these steps:
+## How to Scrape League Stats
+
+Here is the function syntax for scraping team data from a league:
+
+```R
+fbref_team_stats <- function(league = NULL, season = NULL, type = NULL)
+```
+
+### Function parameters
+
+#### Leagues
+Below are the leagues that kickR support and these values are to be passed to the leaue argument in the function. Do note that when a league os not supplied, the English Premier League will be automatically selected.
+
+- premier_league
+- championship
+- serie_a
+- la_liga
+- ligue_1
+- segunda_division
+- serie_b
+- bundesliga
+- mls
+- eredivisie
+- br_serie_a
+- liga_mx
+- primera_liga
+- bundesliga_2
+- belgian_pro_league
+- ligue_2
+
+
+#### Metrics
+Below are the metrics available to be scraped and are to be passed to the type parameter. When the type argument is null, it will be defaulted to the standard metric.
+
+- standard
+- goalkeeping
+- advanced_goalkeeping
+- shooting
+- passing
+- pass_types
+- goal_creation
+- defensive_actions
+- possession
+- playing_time
+- miscellaneous
+
+#### Season
+The season parameter is the last argument to pass to the function. When left blank, it defaults to the current season. It should be supplied in the format `YYYY/YYYY` so if you want data for the 2022 to 2023 season, you can supply `2022/2023` to the year argument. FBREF started collecting metrics for most leagues in 2017, 2018 so should your function return nothing for the league you selected, visit the website to check if data is actually available for that season.
+
+To scrape team statistics from the available football leagues using `kickR`, follow these steps:
 
 1. Load the `kickR` package in your R environment.
 ```R
 library(kickR)
+```
 
-# The fbref_team_stats() function supports all leagues except the MLS
-
-# To scrape premier league goalkeeping data for 2020/2021
-epl_2020_2021 <- fbref_team_stats(league = 'Premier League', season = '2020/2021', type = 'goalkeeping')
+```R
+# To scrape bundesliga league goalkeeping data for 2020/2021
+bundesliga_goalkeeping <- fbref_team_stats(league = "bundesliga",
+                                           season = "2023/2024",
+                                           type = "goalkeeping")
 
 # Expected output as at 12/10/2023
-# A tibble: 20 × 21
-   club  league matches_played squad total_minutes_played mins_per_90 goals_against goals_against_per90
-   <chr> <chr>  <chr>          <chr> <chr>                <chr>       <chr>         <chr>              
- 1 Arse… 3      38             38    3,417                38.0        39            1.03               
- 2 Asto… 1      38             38    3,420                38.0        46            1.21               
- 3 Brig… 2      38             38    3,420                38.0        46            1.21               
- 4 Burn… 3      38             38    3,420                38.0        55            1.45               
- 5 Chel… 3      38             38    3,420                38.0        36            0.95               
- 6 Crys… 2      38             38    3,420                38.0        66            1.74               
- 7 Ever… 3      38             38    3,420                38.0        48            1.26               
- 8 Fulh… 2      38             38    3,420                38.0        53            1.39               
- 9 Leed… 2      38             38    3,420                38.0        54            1.42               
-10 Leic… 1      38             38    3,420                38.0        50            1.32               
-11 Live… 3      38             38    3,420                38.0        42            1.11               
-12 Manc… 3      38             38    3,420                38.0        32            0.84               
-13 Manc… 2      38             38    3,420                38.0        44            1.16               
-14 Newc… 2      38             38    3,420                38.0        62            1.63               
-15 Shef… 1      38             38    3,420                38.0        63            1.66               
-16 Sout… 2      38             38    3,420                38.0        68            1.79               
-17 Tott… 1      38             38    3,420                38.0        45            1.18               
-18 West… 2      38             38    3,420                38.0        76            2.00               
-19 West… 2      38             38    3,420                38.0        47            1.24               
-20 Wolv… 2      38             38    3,420                38.0        52            1.37               
-# ℹ 13 more variables: shots_on_target_against <chr>, saves <chr>, save_percentage <chr>, wins <chr>,
-#   draws <chr>, losses <chr>, clean_sheets <chr>, clean_sheet_percentage <chr>,
-#   penalties_attempted <chr>, penalty_kicks_allowed <chr>, penalty_kicks_saved <chr>,
-#   penalty_kicks_missed <chr>, penalty_kicks_save_percentage <chr>
+# A tibble: 18 × 21
+   club           league matches_played squad total_minutes_played mins_per_90 goals_against goals_against_per90
+   <chr>          <chr>  <chr>          <chr> <chr>                <chr>       <chr>         <chr>              
+ 1 Augsburg       2      34             34    3,060                34.0        60            1.76               
+ 2 Bayern Munich  3      34             34    3,060                34.0        45            1.32               
+ 3 Bochum         2      34             34    3,060                34.0        74            2.18               
+ 4 Darmstadt 98   2      34             34    3,060                34.0        86            2.53               
+ 5 Dortmund       2      34             34    3,060                34.0        43            1.26               
+ 6 Eint Frankfurt 2      34             34    3,060                34.0        50            1.47               
+ 7 Freiburg       1      34             34    3,060                34.0        58            1.71               
+ 8 Gladbach       2      34             34    3,060                34.0        67            1.97               
+ 9 Heidenheim     1      34             34    3,060                34.0        55            1.62               
+10 Hoffenheim     1      34             34    3,060                34.0        66            1.94               
+11 Köln           1      34             34    3,060                34.0        60            1.76               
+12 Leverkusen     2      34             34    3,060                34.0        24            0.71               
+13 Mainz 05       2      34             34    3,060                34.0        51            1.50               
+14 RB Leipzig     2      34             34    3,060                34.0        39            1.15               
+15 Stuttgart      2      34             34    3,060                34.0        39            1.15               
+16 Union Berlin   2      34             34    3,060                34.0        58            1.71               
+17 Werder Bremen  2      34             34    3,060                34.0        54            1.59               
+18 Wolfsburg      2      34             34    3,060                34.0        56            1.65               
+# ℹ 13 more variables: shots_on_target_against <chr>, saves <chr>, save_percentage <chr>, wins <chr>, draws <chr>,
+#   losses <chr>, clean_sheets <chr>, clean_sheet_percentage <chr>, penalties_attempted <chr>,
+#   penalty_kicks_allowed <chr>, penalty_kicks_saved <chr>, penalty_kicks_missed <chr>,
+#   penalty_kicks_save_percentage <chr>
+```
 
+```R
 # Passing data for La Liga
 # If you want latest statistics for a league you can always leave the season parameter out like this
-la_liga_passing_latest <- fbref_team_stats(league = 'La Liga', type = 'passing')
-# Expected Output as at 12/10/2023
+la_liga_passing <- fbref_team_stats(league = "la_liga",
+                                    season = "2023/2024",
+                                    type = "goalkeeping")
 
-la_liga_passing_latest
+la_liga_passing
 # A tibble: 20 × 26
-   club            number_of_players_used mins_per_90 total_passes_completed total_passes_attempted
-   <chr>           <chr>                  <chr>       <chr>                  <chr>                 
- 1 Alavés          22                     9.0         2578                   3617                  
- 2 Almería         26                     9.0         3405                   4238                  
- 3 Athletic Club   22                     9.0         3416                   4434                  
- 4 Atlético Madrid 22                     8.0         3231                   4016                  
- 5 Barcelona       23                     9.0         5506                   6261                  
- 6 Betis           27                     9.0         3786                   4586                  
- 7 Cádiz           25                     9.0         2034                   2971                  
- 8 Celta Vigo      22                     9.0         3064                   3996                  
- 9 Getafe          23                     9.0         2146                   3152                  
-10 Girona          22                     9.0         3945                   4680                  
-11 Granada         26                     9.0         2588                   3477                  
-12 Las Palmas      23                     9.0         4424                   5245                  
-13 Mallorca        21                     9.0         2354                   3252                  
-14 Osasuna         22                     9.0         2942                   4005                  
-15 Rayo Vallecano  22                     9.0         2835                   3818                  
-16 Real Madrid     21                     9.0         5118                   5836                  
-17 Real Sociedad   24                     9.0         3748                   4673                  
-18 Sevilla         27                     8.0         2783                   3743                  
-19 Valencia        24                     9.0         3060                   3987                  
-20 Villarreal      23                     9.0         3618                   4361                  
-# ℹ 21 more variables: pass_completion_percentage <chr>, total_passing_distance <chr>,
-#   total_progressive_distance <chr>, short_passes_completed <chr>, short_passes_attempted <chr>,
-#   short_pass_completion_percentage <chr>, medium_passes_completed <chr>,
-#   medium_passes_attempted <chr>, medium_pass_completion_percentage <chr>,
-#   long_passes_completed <chr>, long_passes_attempted <chr>, long_pass_completion_percentage <chr>,
-#   assists <chr>, xAG <chr>, xA <chr>, xag_performance <chr>, key_passes <chr>,
-#   passes_into_final_third <chr>, passes_into_penalty_box <chr>, crosses_into_penalty_box <chr>, …
+   club            number_of_players_used mins_per_90 total_passes_completed total_passes_attempted pass_completion_perc…¹
+   <chr>           <chr>                  <chr>       <chr>                  <chr>                  <chr>                 
+ 1 Alavés          30                     38.0        10091                  14116                  71.5                  
+ 2 Almería         35                     38.0        12774                  16540                  77.2                  
+ 3 Athletic Club   27                     38.0        14509                  18724                  77.5                  
+ 4 Atlético Madrid 27                     38.0        17064                  20709                  82.4                  
+ 5 Barcelona       29                     38.0        21506                  24761                  86.9                  
+ 6 Betis           35                     38.0        15310                  18979                  80.7                  
+ 7 Cádiz           34                     38.0        10763                  14990                  71.8                  
+ 8 Celta Vigo      31                     38.0        13890                  17776                  78.1                  
+ 9 Getafe          33                     38.0        10713                  15193                  70.5                  
+10 Girona          25                     38.0        18793                  21914                  85.8                  
+11 Granada         40                     38.0        12127                  15976                  75.9                  
+12 Las Palmas      29                     38.0        19105                  22882                  83.5                  
+13 Mallorca        25                     38.0        11476                  15645                  73.4                  
+14 Osasuna         29                     38.0        12874                  17335                  74.3                  
+15 Rayo Vallecano  26                     38.0        13282                  17459                  76.1                  
+16 Real Madrid     27                     38.0        21794                  24691                  88.3                  
+17 Real Sociedad   31                     38.0        15263                  19249                  79.3                  
+18 Sevilla         35                     38.0        14628                  18599                  78.6                  
+19 Valencia        29                     38.0        12233                  16255                  75.3                  
+20 Villarreal      32                     38.0        15349                  18637                  82.4                  
+# ℹ abbreviated name: ¹​pass_completion_percentage
+# ℹ 20 more variables: total_passing_distance <chr>, total_progressive_distance <chr>, short_passes_completed <chr>,
+#   short_passes_attempted <chr>, short_pass_completion_percentage <chr>, medium_passes_completed <chr>,
+#   medium_passes_attempted <chr>, medium_pass_completion_percentage <chr>, long_passes_completed <chr>,
+#   long_passes_attempted <chr>, long_pass_completion_percentage <chr>, assists <chr>, xAG <chr>, xA <chr>,
+#   xag_performance <chr>, key_passes <chr>, passes_into_final_third <chr>, passes_into_penalty_box <chr>,
+#   crosses_into_penalty_box <chr>, progressive_passes <chr>
 
-# kickR also supports these non european leagues: Liga MX and Campeonato Brasileiro Série A
+kickR also supports league outside of Europe like the Mexican Liga Mx. It follows the same pattern like scraping for other leagues. If you leave the season argument blank, kickR scrapes data for the current season, so if we wanted to see the latest shot and goal creation stats across clubs in the Mexican leagues, we can do it like this
 
-# To get possession stats of the Campeonato Brasileiro Série A
+```R
+# Scrape latest liga mx shot and goal creation stats
+liga_mx_sca_gca <- fbref_team_stats(league = "liga_mx",
+                                    type = "goal_creation")
 
-br_serie_a_possession <- fbref_team_stats(league = 'Campeonato Brasileiro Serie A', season = '2022/2023', type = 'possession')
-
-# Expected output
-# A tibble: 20 × 26
-   club             number_of_players_used possession mins_per_90 total_touches touches_defensive_pen…¹
-   <chr>            <chr>                  <chr>      <chr>       <chr>         <chr>                  
- 1 América (MG)     41                     41.5       26.0        13067         1475                   
- 2 Ath Paranaense   36                     47.4       26.0        14197         1488                   
- 3 Atlético Mineiro 31                     53.8       26.0        16389         1575                   
- 4 Bahia            34                     50.7       26.0        15195         1547                   
- 5 Botafogo (RJ)    34                     45.7       26.0        14527         1492                   
- 6 Bragantino       34                     56.2       26.0        16180         1308                   
- 7 Corinthians      35                     49.0       26.0        16003         1797                   
- 8 Coritiba         42                     43.5       26.0        13593         1612                   
- 9 Cruzeiro         35                     52.5       25.0        15199         1477                   
-10 Cuiabá           29                     44.5       25.0        13314         1320                   
-11 Flamengo         32                     58.5       26.0        17899         1507                   
-12 Fluminense       34                     61.1       26.0        18010         1870                   
-13 Fortaleza        31                     47.0       26.0        14391         1248                   
-14 Goiás            37                     44.4       26.0        13865         1776                   
-15 Grêmio           41                     45.8       26.0        14651         1514                   
-16 Internacional    34                     52.4       26.0        16120         1469                   
-17 Palmeiras        31                     53.8       26.0        15495         1415                   
-18 Santos           45                     44.1       26.0        13489         1515                   
-19 São Paulo        35                     60.5       26.0        17832         1626                   
-20 Vasco da Gama    39                     47.5       26.0        14282         1550                   
-# ℹ abbreviated name: ¹​touches_defensive_penalty_box
-# ℹ 20 more variables: touches_defensive_third <chr>, touches_middle_third <chr>,
-#   touches_final_third <chr>, touches_attacking_penalty_box <chr>, inplay_touches <chr>,
-#   take_ons_attempted <chr>, successful_take_ons <chr>, successful_take_on_percentage <chr>,
-#   tackles_during_take_on <chr>, tackles_during_take_on_percentage <chr>, carries <chr>,
-#   total_carrying_distance <chr>, progressive_carrying_distance <chr>, progressive_carries <chr>,
-#   carries_into_final_third <chr>, carries_into_penalty_box <chr>, miscontrols <chr>, …
-
-
-
-
-# MLS is a year long league not split over seasons. We can get standardMLS team data by running this line of code
-
-mls_2020 <- fbref_mls_team_stats(season = '2020', type = 'standard')
-
-# Expected output
-# A tibble: 26 × 32
-   club   number_of_players_used average_age possession matches_played starts minutes mins_per_90 goals
-   <chr>  <chr>                  <chr>       <chr>      <chr>          <chr>  <chr>   <chr>       <chr>
- 1 Atlan… 27                     25.6        54.7       23             253    2,070   23.0        23   
- 2 Chica… 25                     26.7        51.2       23             253    2,070   23.0        33   
- 3 Color… 22                     25.8        52.0       18             198    1,620   18.0        30   
- 4 Colum… 26                     27.4        52.0       23             253    2,070   23.0        34   
- 5 D.C. … 26                     26.6        46.0       23             253    2,070   23.0        24   
- 6 Dynamo 26                     27.7        48.7       23             253    2,070   23.0        30   
- 7 FC Ci… 30                     27.5        49.3       23             253    2,070   23.0        11   
- 8 FC Da… 27                     27.0        51.2       22             242    1,980   22.0        28   
- 9 Inter… 28                     26.8        47.3       23             253    2,070   23.0        24   
-10 LA Ga… 25                     27.2        45.3       22             242    1,980   22.0        26   
-# ℹ 16 more rows
-# ℹ 23 more variables: assists <chr>, goals_and_assists <chr>, non_penalty_goals <chr>,
-#   penalties <chr>, penalty_kick_attempts <chr>, yellow_cards <chr>, red_cards <chr>, xG <chr>,
-#   npxG <chr>, xAG <chr>, `npxG+xAG` <chr>, progressive_carries <chr>, progressive_passes <chr>,
-#   goals_per90 <chr>, assists_per90 <chr>, goals_and_assists_per90 <chr>,
-#   non_penalty_goals_per90 <chr>, non_penalty_goals_and_assists_per90 <chr>, xg_per90 <chr>,
-#   xag_per90 <chr>, xg_and_xag_per90 <chr>, npxg_per90 <chr>, npxg_and_xag_per90 <chr>
-# ℹ Use `print(n = ...)` to see more rows
-
-
-# Also every league has a separate function for scraping team statistics but slightly differs from the MLS code
-
-# To scrape advanced goalkeeping statistics for Belgium Pro League for example, this code should do the trick
-belge_adv_goalkeeping <- fbref_belgian_pro_league_team_stats(type = 'advanced_goalkeeping')
-
-# Expected output
-# A tibble: 16 × 28
-   club   number_of_players_used mins_per_90 goals_against penalty_kicks_allowed free_kick_goals_agai…¹
-   <chr>  <chr>                  <chr>       <chr>         <chr>                 <chr>                 
- 1 Ander… 2                      10.0        10            2                     0                     
- 2 Antwe… 1                      10.0        5             3                     0                     
- 3 Cercl… 1                      10.0        11            0                     0                     
- 4 Charl… 1                      10.0        15            3                     0                     
- 5 Club … 1                      10.0        11            0                     1                     
- 6 Eupen  2                      10.0        22            3                     0                     
- 7 Genk   1                      10.0        10            0                     0                     
- 8 Gent   2                      10.0        10            1                     0                     
- 9 Kortr… 1                      10.0        22            0                     0                     
-10 Meche… 1                      10.0        12            1                     0                     
-11 OH Le… 2                      10.0        19            5                     0                     
-12 RWD M… 1                      10.0        20            1                     0                     
-13 Sint-… 2                      10.0        14            1                     0                     
-14 Stand… 1                      10.0        9             1                     0                     
-15 Union… 2                      10.0        12            0                     0                     
-16 Weste… 2                      10.0        19            1                     0                     
-# ℹ abbreviated name: ¹​free_kick_goals_against
-# ℹ 22 more variables: corner_kick_goals_against <chr>, own_goals_against <chr>, PSxG <chr>,
-#   PSxG_per_shot_on_target <chr>, PSxG_minus_goals_allowed <chr>,
-#   PSxG_minus_goals_allowed_per90 <chr>, launched_passes_completed <chr>,
-#   launched_passes_attempted <chr>, launched_passes_completion_pct <chr>, passes_attempted <chr>,
-#   throws_attempted <chr>, percentage_passes_launched <chr>, avg_pass_length <chr>, goal_kicks <chr>,
-#   percentage_goal_kicks_launched <chr>, avg_goal_kick_length <chr>, crosses_faced <chr>, …
-
+liga_mx_sca_gca
+# A tibble: 18 × 19
+   club    number_of_players_used mins_per_90 shot_creating_actions shot_creating_action…¹ sca_live_passes sca_dead_passes
+   <chr>   <chr>                  <chr>       <chr>                 <chr>                  <chr>           <chr>          
+ 1 América 24                     4.0         93                    23.25                  68              8              
+ 2 Atlas   21                     4.0         79                    19.75                  50              13             
+ 3 Atléti… 20                     4.0         80                    20.00                  58              6              
+ 4 Cruz A… 20                     4.0         120                   30.00                  89              16             
+ 5 FC Juá… 20                     4.0         68                    17.00                  51              4              
+ 6 Guadal… 19                     4.0         95                    23.75                  73              5              
+ 7 León    20                     4.0         87                    21.75                  60              8              
+ 8 Mazatl… 20                     4.0         73                    18.25                  53              9              
+ 9 Monter… 20                     4.0         84                    21.00                  74              2              
+10 Necaxa  21                     4.0         85                    21.25                  64              10             
+11 Pachuca 21                     4.0         85                    21.25                  54              12             
+12 Puebla  19                     4.0         114                   28.50                  81              14             
+13 Querét… 22                     4.0         61                    15.25                  43              8              
+14 Santos  22                     4.0         46                    11.50                  26              7              
+15 Tijuana 21                     4.0         87                    21.75                  68              6              
+16 Toluca  19                     4.0         77                    19.25                  63              7              
+17 UANL    18                     4.0         109                   27.25                  80              10             
+18 UNAM    22                     4.0         112                   28.00                  71              16             
+# ℹ abbreviated name: ¹​shot_creating_actions_per90
+# ℹ 12 more variables: sca_take_ons <chr>, sca_shots <chr>, sca_fouls <chr>, sca_defensive_actions <chr>,
+#   goal_creating_actions <chr>, goal_creating_actions_per90 <chr>, gca_live_passes <chr>, gca_dead_passes <chr>,
+#   gca_take_ons <chr>, gca_shots <chr>, gca_fouls <chr>, gca_defensive_actions <chr>
 
 ```
-## Player Data
+## How to Scrape Player Data
 
-With this version you can access player data of every single player playing in Europe's top 5 leagues.
+With this version you can access player data of every available league on FBREF. Do note that the player data scraping is a little different from the team data scraping and since the player data tables on the site are dynamically rendered, we will use Javascript to scrape the data. To use this function, you will need to have [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/) installed on your computer. Note that if you encounter any problems during scraping, use Ctrl + Shift + F10 to restart your R session then use the function again
 
-Due to standardization, this version gives you access to get player statistics data for only these 5 leagues for now. In the next release which will feature enhanced scouting programme and a player similarity model, we will extend the access to more players in other leagues
+To scrape the EFL championship passing data for players for the 2022/2023 season for example, you can use this
 
 
 ```R
-# If you want to run an analysis on some of the most influential players/metronomes 
-# in possession in Europe's top 5 leagues, you could scrape the data first with this
-possession <- fbref_big5_player_stats(season = '2022/2023', type = 'possession')
-
-# Expected output
-# A tibble: 2,889 × 30
-   player            nation  position club           league  age   birth_year mins_per_90 total_touches
-   <chr>             <chr>   <chr>    <chr>          <chr>   <chr> <chr>      <chr>       <chr>        
- 1 Brenden Aaronson  us USA  MF,FW    Leeds United   eng Pr… 21    2000       26.4        1143         
- 2 Paxten Aaronson   us USA  MF,DF    Eint Frankfurt de Bun… 18    2003       1.9         99           
- 3 James Abankwah    ie IRL  DF       Udinese        it Ser… 18    2004       0.7         39           
- 4 George Abbott     eng ENG MF       Tottenham      eng Pr… 16    2005       0.0         2            
- 5 Yunis Abdelhamid  ma MAR  DF       Reims          fr Lig… 34    1987       37.0        2459         
- 6 Himad Abdelli     dz ALG  MF,FW    Angers         fr Lig… 22    1999       23.7        1516         
- 7 Salis Abdul Samed gh GHA  MF       Lens           fr Lig… 22    2000       32.2        2224         
- 8 Laurent Abergel   fr FRA  MF       Lorient        fr Lig… 29    1993       26.0        1779         
- 9 Oliver Abildgaard dk DEN  MF       Hellas Verona  it Ser… 26    1996       6.6         257          
-10 Matthis Abline    fr FRA  FW,MF    Auxerre        fr Lig… 19    2003       9.0         210          
-# ℹ 2,879 more rows
-# ℹ 21 more variables: touches_defensive_penalty_box <chr>, touches_defensive_third <chr>,
-#   touches_middle_third <chr>, touches_final_third <chr>, touches_attacking_penalty_box <chr>,
-#   inplay_touches <chr>, take_ons_attempted <chr>, successful_take_ons <chr>,
-#   successful_take_on_percentage <chr>, tackles_during_take_on <chr>,
-#   tackles_during_take_on_percentage <chr>, carries <chr>, total_carrying_distance <chr>,
-#   progressive_carrying_distance <chr>, progressive_carries <chr>, carries_into_final_third <chr>, …
+> # Scrape passing stats for all EFL players in the 2022/2023 season
+> efl_passing_players <- fbref_player_stats(season = "2022/2023",
++                                           league = "championship",
++                                           type = "passing")
+> 
+> # Expected output
+> efl_passing_players
+# A tibble: 750 × 30
+   player           nation  position club       age   birth_year mins_per_90 total_passes_completed total_passes_attempted
+   <chr>            <chr>   <chr>    <chr>      <chr> <chr>      <chr>       <chr>                  <chr>                 
+ 1 Max Aarons       eng ENG DF       Norwich C… 22    2000       42.8        2008                   2536                  
+ 2 Thelo Aasgaard   no NOR  FW,MF    Wigan Ath… 20    2002       17.6        399                    507                   
+ 3 Nelson Abbey     eng ENG DF       Reading    18    2003       0.2         6                      9                     
+ 4 Kelvin Abrefa    eng ENG MF,DF    Reading    18    2003       1.4         20                     36                    
+ 5 Finlay Adair     eng ENG FW,MF    Preston    17    2005       0.7         3                      8                     
+ 6 Elijah Adebayo   eng ENG FW       Luton Town 24    1998       35.7        388                    625                   
+ 7 Toby Adeyemo     eng ENG MF,FW    Watford    17    2005       1.1         9                      15                    
+ 8 Albert Adomah    gh GHA  FW,MF    QPR        34    1987       14.1        250                    423                   
+ 9 Michael Adu-Poku eng ENG FW       Watford    16    2005       0.1         0                      1                     
+10 Benik Afobe      cd COD  FW       Millwall   29    1993       10.3        127                    192                   
+# ℹ 740 more rows
+# ℹ 21 more variables: pass_completion_percentage <chr>, total_passing_distance <chr>, total_progressive_distance <chr>,
+#   short_passes_completed <chr>, short_passes_attempted <chr>, short_pass_completion_percentage <chr>,
+#   medium_passes_completed <chr>, medium_passes_attempted <chr>, medium_pass_completion_percentage <chr>,
+#   long_passes_completed <chr>, long_passes_attempted <chr>, long_pass_completion_percentage <chr>, assists <chr>,
+#   xAG <chr>, xA <chr>, xag_performance <chr>, key_passes <chr>, passes_into_final_third <chr>,
+#   passes_into_penalty_box <chr>, crosses_into_penalty_box <chr>, progressive_passes <chr>
 # ℹ Use `print(n = ...)` to see more rows
+```
 
-# Imagine you wanted to do the same analysis but only for Ligue 1 players
-# You can run this
-library(dplyr)
+## How to Find Similar Players
 
-possession_fr <- possession |> filter(league == "fr Ligue 1")
+To use this function, you will need to have Firefox installed on your computer.
 
-# Expected Output
-# A tibble: 606 × 30
-   player            nation position club     league     age   birth_year mins_per_90 total_touches
-   <chr>             <chr>  <chr>    <chr>    <chr>      <chr> <chr>      <chr>       <chr>        
- 1 Yunis Abdelhamid  ma MAR DF       Reims    fr Ligue 1 34    1987       37.0        2459         
- 2 Himad Abdelli     dz ALG MF,FW    Angers   fr Ligue 1 22    1999       23.7        1516         
- 3 Salis Abdul Samed gh GHA MF       Lens     fr Ligue 1 22    2000       32.2        2224         
- 4 Laurent Abergel   fr FRA MF       Lorient  fr Ligue 1 29    1993       26.0        1779         
- 5 Matthis Abline    fr FRA FW,MF    Auxerre  fr Ligue 1 19    2003       9.0         210          
- 6 Matthis Abline    fr FRA FW,MF    Rennes   fr Ligue 1 19    2003       1.2         37           
- 7 Zakaria Aboukhlal ma MAR FW,MF    Toulouse fr Ligue 1 22    2000       27.5        1163         
- 8 Mohamed Achi      fr FRA FW       Nantes   fr Ligue 1 20    2002       0.4         25           
- 9 Martin Adeline    fr FRA MF,FW    Reims    fr Ligue 1 18    2003       1.2         59           
-10 Emmanuel Agbadou  ci CIV DF       Reims    fr Ligue 1 25    1997       26.5        1798   
+```R
+# extract player passing data 
+df <- fbref_player_stats(season = "2023/2024",
+                         league = "premier_league",
+                         type = "passing")
 
-# If you work with a national team and want to see the performances of your country's players
-# Provided they play in Europe's T5 leagues and they are for example Ghanaian, you can do this
+# find players similar to Martin Ødegaard in tge English Premier League
+m_odegaard_sim_pl <- find_similar_players(df = df,
+                                       player ="Martin Ødegaard",
+                                       metrics = c("key_passes",
+                                                   "passes_into_final_third"),
+                                       formula = "euclidean",
+                                       top_n = 15)
 
-gha_players_europe <- possession |> filter(nation == "gh GHA")
+m_odegaard_sim_pl
+                    player distance
+580        Martin Ødegaard  0.00000
+184        Bruno Fernandes 29.54657
+415            Cole Palmer 38.41875
+552      James Ward-Prowse 44.41846
+317         James Maddison 46.09772
+220        Bruno Guimarães 46.64762
+201     Morgan Gibbs-White 53.85165
+313           Douglas Luiz 54.12947
+316    Alexis Mac Allister 55.03635
+196        Conor Gallagher 55.90170
+18  Trent Alexander-Arnold 56.63921
+434            Pedro Porro 56.79789
+457       Andrew Robertson 58.00000
+114             Lewis Cook 60.16644
+418          Lucas Paquetá 61.40033                                       
+```
 
-# Expected output
-# A tibble: 26 × 30
-   player                  nation position club       league age   birth_year mins_per_90 total_touches
-   <chr>                   <chr>  <chr>    <chr>      <chr>  <chr> <chr>      <chr>       <chr>        
- 1 Salis Abdul Samed       gh GHA MF       Lens       fr Li… 22    2000       32.2        2224         
- 2 Felix Afena-Gyan        gh GHA FW,MF    Cremonese  it Se… 19    2003       9.1         318          
- 3 Joseph Aidoo            gh GHA DF       Celta Vigo es La… 26    1995       34.7        2082         
- 4 Daniel Amartey          gh GHA DF       Leicester… eng P… 27    1994       17.9        1279         
- 5 Christopher Antwi-Adjei gh GHA FW,MF    Bochum     de Bu… 28    1994       22.0        996          
- 6 André Ayew              gh GHA FW,MF    Nott'ham … eng P… 32    1989       3.5         106          
- 7 Jordan Ayew             gh GHA FW,MF    Crystal P… eng P… 30    1991       30.2        1327         
- 8 Iddrisu Baba            gh GHA MF,DF    Mallorca   es La… 26    1996       18.9        773          
- 9 Kevin-Prince Boateng    gh GHA MF       Hertha BSC de Bu… 35    1987       5.2         320          
-10 Alexander Djiku         gh GHA DF       Strasbourg fr Li… 27    1994       29.7        1873         
-# ℹ 16 more rows
-# ℹ 21 more variables: touches_defensive_penalty_box <chr>, touches_defensive_third <chr>,
-#   touches_middle_third <chr>, touches_final_third <chr>, touches_attacking_penalty_box <chr>,
-#   inplay_touches <chr>, take_ons_attempted <chr>, successful_take_ons <chr>,
-#   successful_take_on_percentage <chr>, tackles_during_take_on <chr>,
-#   tackles_during_take_on_percentage <chr>, carries <chr>, total_carrying_distance <chr>,
-#   progressive_carrying_distance <chr>, progressive_carries <chr>, carries_into_final_third <chr>, …
-# ℹ Use `print(n = ...)` to see more rows
+It is usually better to have a larger dataframe. You can use the fbref_player_stats() function to scrape player stats from as many leagues as you can and use the `rbind()` function to combine them into a larger dataframe to have a very deep pool of players so you can really unearth hidden players who are really good but play in a less known league. For an example, we luckily have FBREF having all players in the top 5 league in a single table which you can scrape with kickR using the fbref_big5_player_stats() function. If we wanted to really see which players perform similarly to Martin Ødegaard in terms of key passes and passes  into the final third, we can go about it like this:
 
+```R
+# Scrape passing data for all players in top 5 leagues: Premier League, La Liga, Serie A, Bundesliga, Ligue 1
+df <- fbref_big5_player_stats(season = "2023/2024", type = "passing")
+
+# find players similar to Martin Ødegaard in Europe's Top 5 Leagues using cosine similarity
+m_odegaard_sim_big5_cos <- find_similar_players(df = df,
+                                            player ="Martin Ødegaard",
+                                            metrics = c("key_passes",
+                                                        "passes_into_final_third"),
+                                            formula = "cosine",
+                                            top_n = 15)
+
+m_odegaard_sim_big5_cos
+              player similarity
+2849 Martin Ødegaard  1.0000000
+108  Felipe Anderson  0.9999997
+2429  Bernardo Silva  0.9999984
+2583   Jan Thielmann  0.9999984
+2660 Kacper Urbanski  0.9999984
+1762 Takumi Minamino  0.9999960
+735       Ritsu Doan  0.9999940
+2068   Adrià Pedrosa  0.9999928
+2336  Alexis Sánchez  0.9999928
+81    Miguel Almirón  0.9999911
+547     Jordan Clark  0.9999911
+1409    Grejohn Kyei  0.9999911
+1036  Vincenzo Grifo  0.9999904
+191       Ridle Baku  0.9999873
+2093     Ayoze Pérez  0.9999873                                          
+
+# find players similar to Martin Ødegaard in Europe's Top 5 Leagues uing euclidean distance
+m_odegaard_sim_big5_eucl <- find_similar_players(df = df,
+                                            player ="Martin Ødegaard",
+                                            metrics = c("key_passes",
+                                                        "passes_into_final_third"),
+                                            formula = "euclidean",
+                                            top_n = 15)
+
+m_odegaard_sim_big5_eucl
+                  player distance
+2849     Martin Ødegaard  0.00000
+2366       Téji Savanier 28.23119
+1071      İlkay Gündoğan 28.44293
+862      Bruno Fernandes 29.54657
+1195                Isco 36.61967
+2027         Cole Palmer 38.41875
+63          Luis Alberto 39.84972
+361  Benjamin Bourigeaud 40.80441
+1339      Joshua Kimmich 41.03657
+2512        Kevin Stöger 43.01163
+2743   James Ward-Prowse 44.41846
+1553      James Maddison 46.09772
+1063     Bruno Guimarães 46.64762
+1784         Luka Modrić 47.04253
+2211   Tijjani Reijnders 52.61179
 ```
 
 
+As you can see, cosine and euclidean distance measure similarity in two different approaches. An article will be added to this repo's description to talk more about it and if you have any suggestions on how to adjust it, do reach out to me. 
+
+A tip I would like to include is this. In our example, Martin Ødegaard is a midfielder. It would make sense to filter the scraped data to include only midfielders or defenders/midfielders or forwards/midfielders. This will improve the formula's ability to find similar players as the context is clearer. If you wanted to filter your dataframe for only midfielders before calling the find_similar_players() function, you could use this in base R:
+
+```R
+# filter dataframe for only midfielders
+df <- df[df$position == "MF", ]
+
+# call similarity function again
+m_odegaard_sim_big5_eucl <- find_similar_players(df = df,
+                                            player ="Martin Ødegaard",
+                                            metrics = c("key_passes",
+                                                        "passes_into_final_third"),
+                                            formula = "euclidean",
+                                            top_n = 15)
+
+m_odegaard_sim_big5_eucl
+               player distance
+568   Martin Ødegaard  0.00000
+480     Téji Savanier 28.23119
+207    İlkay Gündoğan 28.44293
+231              Isco 36.61967
+13       Luis Alberto 39.84972
+515      Kevin Stöger 43.01163
+553 James Ward-Prowse 44.41846
+311    James Maddison 46.09772
+205   Bruno Guimarães 46.64762
+362       Luka Modrić 47.04253
+437 Tijjani Reijnders 52.61179
+265  Teun Koopmeiners 54.03702
+304      Douglas Luiz 54.12947
+184       Angel Gomes 54.14795
+32  Maximilian Arnold 54.74486                                            
+```
+
+These are the available positions for players on FBREF:
+
+```R
+unique(df$position)
+ [1] "DF"    "MF,FW" "MF"    "FW"    "FW,MF" "DF,FW" "GK"    "DF,MF" "MF,DF" "FW,DF"
+```
+So if you want to extend your midfielder search, you would have to filter for players who are primarily registered as midfielders so MF, MF/FW, MF/DF. To filter for multiple values in base R, you can use this snippet:
+
+```R 
+df <- df[df$position %in% c("MF", "MF,FW", "MF,DF"), ]
+```
 ### Data Cleaning
 This package was built on `rvest`, `jsonlite` and `openxlsx`. Since the first release is a purely scraping package release, you would have to load dplyr into your R environment for helpful data manipulation functions like renaming columns and also changing column data types from character to numeric for example. 
 
-It is also worth noting that the scraping package cleans the column names into more descriptive names for easier analysis.
+It is also worth noting that the scraping package cleans the column names into more descriptive names for easier analysis. You can always rename the columns in your analysis workflow to what suits you best.
 
-```R
-# We can change the column data type from character to double for example for a single column or multiple columns in our br_serie_a_possession dataframe.
-
-# We want to convert every column apart from the only actual character column, club to do that we can run
-br_serie_a_possession <- br_serie_a_possession |> mutate_at(-1, as.numeric)
-
-# Expected output
-# A tibble: 20 × 26
-   club             number_of_players_used possession mins_per_90 total_touches touches_defensive_pen…¹
-   <chr>                             <dbl>      <dbl>       <dbl>         <dbl>                   <dbl>
- 1 América (MG)                         41       41.5          26         13067                    1475
- 2 Ath Paranaense                       36       47.4          26         14197                    1488
- 3 Atlético Mineiro                     31       53.8          26         16389                    1575
- 4 Bahia                                34       50.7          26         15195                    1547
- 5 Botafogo (RJ)                        34       45.7          26         14527                    1492
- 6 Bragantino                           34       56.2          26         16180                    1308
- 7 Corinthians                          35       49            26         16003                    1797
- 8 Coritiba                             42       43.5          26         13593                    1612
- 9 Cruzeiro                             35       52.5          25         15199                    1477
-10 Cuiabá                               29       44.5          25         13314                    1320
-11 Flamengo                             32       58.5          26         17899                    1507
-12 Fluminense                           34       61.1          26         18010                    1870
-13 Fortaleza                            31       47            26         14391                    1248
-14 Goiás                                37       44.4          26         13865                    1776
-15 Grêmio                               41       45.8          26         14651                    1514
-16 Internacional                        34       52.4          26         16120                    1469
-17 Palmeiras                            31       53.8          26         15495                    1415
-18 Santos                               45       44.1          26         13489                    1515
-19 São Paulo                            35       60.5          26         17832                    1626
-20 Vasco da Gama                        39       47.5          26         14282                    1550
-# ℹ abbreviated name: ¹​touches_defensive_penalty_box
-# ℹ 20 more variables: touches_defensive_third <dbl>, touches_middle_third <dbl>,
-#   touches_final_third <dbl>, touches_attacking_penalty_box <dbl>, inplay_touches <dbl>,
-#   take_ons_attempted <dbl>, successful_take_ons <dbl>, successful_take_on_percentage <dbl>,
-#   tackles_during_take_on <dbl>, tackles_during_take_on_percentage <dbl>, carries <dbl>,
-#   total_carrying_distance <dbl>, progressive_carrying_distance <dbl>, progressive_carries <dbl>,
-#   carries_into_final_third <dbl>, carries_into_penalty_box <dbl>, miscontrols <dbl>, …
-
-# Renaming columns
-# If we wanted to rename the possession column above, we could do this
-br_serie_a_possession <- br_serie_a_possession |> rename(avg_possession = possession)
-
-# Or if you want to use colnames() but you hate to manually find the index
-# Find the index of the 'possession' column
-possession_index <- which(colnames(df) == "possession")
-
-# Rename the 'possession' column to 'avg_possession'
-colnames(df)[possession_index] <- 'avg_possession'
-
-# If you actually enjoy pain, you can do it manually like this
-colnames(br_serie_a_possession)[3] <- 'avg_possession'
-
-# Expected output of all the methods above
-# A tibble: 20 × 26
-   club          number_of_players_used avg_possession mins_per_90 total_touches touches_defensive_pe…¹
-   <chr>                          <dbl>          <dbl>       <dbl>         <dbl>                  <dbl>
- 1 América (MG)                      41           41.5          26         13067                   1475
- 2 Ath Paranaen…                     36           47.4          26         14197                   1488
- 3 Atlético Min…                     31           53.8          26         16389                   1575
- 4 Bahia                             34           50.7          26         15195                   1547
- 5 Botafogo (RJ)                     34           45.7          26         14527                   1492
- 6 Bragantino                        34           56.2          26         16180                   1308
- 7 Corinthians                       35           49            26         16003                   1797
- 8 Coritiba                          42           43.5          26         13593                   1612
- 9 Cruzeiro                          35           52.5          25         15199                   1477
-10 Cuiabá                            29           44.5          25         13314                   1320
-11 Flamengo                          32           58.5          26         17899                   1507
-12 Fluminense                        34           61.1          26         18010                   1870
-13 Fortaleza                         31           47            26         14391                   1248
-14 Goiás                             37           44.4          26         13865                   1776
-15 Grêmio                            41           45.8          26         14651                   1514
-16 Internacional                     34           52.4          26         16120                   1469
-17 Palmeiras                         31           53.8          26         15495                   1415
-18 Santos                            45           44.1          26         13489                   1515
-19 São Paulo                         35           60.5          26         17832                   1626
-20 Vasco da Gama                     39           47.5          26         14282                   1550
-# ℹ abbreviated name: ¹​touches_defensive_penalty_box
-# ℹ 20 more variables: touches_defensive_third <dbl>, touches_middle_third <dbl>,
-#   touches_final_third <dbl>, touches_attacking_penalty_box <dbl>, inplay_touches <dbl>,
-#   take_ons_attempted <dbl>, successful_take_ons <dbl>, successful_take_on_percentage <dbl>,
-#   tackles_during_take_on <dbl>, tackles_during_take_on_percentage <dbl>, carries <dbl>,
-#   total_carrying_distance <dbl>, progressive_carrying_distance <dbl>, progressive_carries <dbl>,
-#   carries_into_final_third <dbl>, carries_into_penalty_box <dbl>, miscontrols <dbl>, …
-
-# Nation and league columns in dataframe
-# If you want to see nation and league in the three letter code format
-possession$nation <- gsub("^.+\\s", "", possession$nation)
-possession$league <- gsub("^.+\\s", "", possession$league)
-```
 
 # How to Use the `save_table` Function
 
@@ -454,14 +449,14 @@ kickR relies on the following R packages:
 
 - **jsonlite**
 - **rvest**
+- **RSelenium**
 - **openxlsx**
 
-Additionally, it's recommended to use **testthat** for testing.
 
 ## Author and Maintainer
 
 - **Author**: Jeffrey Ohene
-- **Maintainer**: Jeffrey Ohene (jeffrey.ohene@aol.com)
+- **Maintainer**: [jeffreyohene](https://github.com/jeffreyohene))
 
 ## License
 
@@ -473,11 +468,9 @@ details.
 If you would like to contribute to this project, please check the contributions file for this package.
 
 ### Reporting Issues
-We regularly monitor the packages' functions' performance and functionality and 
-release updates as needed to ensure its reliability. If you encounter any 
+I regularly monitor the packages' functions' performance and functionality and 
+release updates as needed to ensure its reliability and from time to time, small updates will be released to fix bugs or comply with FBREF's scraping policy. If you encounter any 
 issues or have suggestions for improvements, please don't hesitate to open an 
-issue on our [GitHub repository](https://github.com/jeffreyohene/wikiscrapeR/issues) and provide as much detail as possible to help us understand and address the issue.
-
-Explore football analytics and data scraping with **kickR**, your go-to R package for football enthusiasts, analysts, and data scientists.
+issue on the [repo](https://github.com/jeffreyohene/wikiscrapeR/issues) and provide as much detail as possible to help me understand and address the issue.
 
 Project icon from icon8.com

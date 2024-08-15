@@ -1,7 +1,7 @@
 Package: kickR
 Type: Package
 Title: Scrape Team and Player Data
-Version: 1.0.1
+Version: 1.1.0
 Author: Jeffrey Ohene
 Maintainer: Jeffrey Ohene <jeffrey.ohene@aol.com>
 Description: Retrieve data for teams in major European leagues and North and
