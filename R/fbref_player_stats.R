@@ -1,3 +1,45 @@
+#' Scrape and Clean Player Statistics from FBREF.com
+#'
+#' Scrapes player statistics from FBREF.com
+#' for a specified league, season, and type of statistics. The function returns
+#' a cleaned data frame with relevant player stats.
+#'
+#' @param season A character string specifying the season in the format "YYYY/YYYY"
+#'   (e.g., "2023/2024"). Default is the current season if not provided.
+#' @param league A character string specifying the league for which to retrieve
+#'   statistics. Available options include "premier_league", "championship",
+#'   "serie_a", "la_liga", "ligue_1", "segunda_division", "serie_b", "bundesliga",
+#'   "mls", "eredivisie", "br_serie_a", "liga_mx", "primera_liga", "bundesliga_2",
+#'   "belgian_pro_league", and "ligue_2". Default is "premier_league".
+#' @param type A character string specifying the type of statistics to scrape.
+#'   Options include "standard", "goalkeeping", "advanced_goalkeeping", "shooting",
+#'   "passing", "pass_types", "goal_creation", "defensive_actions", "possession",
+#'   "playing_time", and "miscellaneous". Default is "standard".
+#'
+#' @return A data frame containing the requested player statistics, with columns
+#'   named according to the type of statistics requested.
+#'
+#' @examples
+#' \dontrun{
+#'   # Retrieve standard stats for Premier League in the 2023/2024 season
+#'   df <- fbref_player_stats(season = "2023/2024", league = "premier_league", type = "standard")
+#'   head(df)
+#' }
+#'
+#' @details
+#' The function checks the validity of the season and league inputs and constructs
+#' the appropriate URL to scrape the data. If the scraping process fails, the function
+#' returns an error message and `NULL`. The data is cleaned by removing duplicate headers
+#' and unnecessary columns, and column names are adjusted based on the specified type.
+#'
+#' The function requires the `RSelenium` and `rvest` packages. Ensure these packages are
+#' installed before running the function.
+#'
+#' @importFrom rvest html_table read_html
+#' @importFrom RSelenium rsDriver
+#'
+#' @export
+
 # gebrauchte package
 #if (!requireNamespace("rvest","RSelenium", quietly = TRUE)) {
 #  install.packages("rvest")
@@ -9,7 +51,8 @@ fbref_player_stats <- function(season = NULL, league = NULL, type = NULL) {
 
   # Define valid seasons
   valid_seasons <- c('2018/2019','2019/2020','2020/2021',
-                     '2021/2022','2022/2023', "2023/2024")
+                     '2021/2022','2022/2023', "2023/2024",
+                     '2024/2025')
 
   # league codes
   codes <- list(
@@ -293,7 +336,8 @@ fbref_player_stats <- function(season = NULL, league = NULL, type = NULL) {
 
   check_season <- function(season = NULL) {
     valid_seasons <- c('2018/2019', '2019/2020', '2020/2021',
-                       '2021/2022', '2022/2023', '2023/2024')
+                       '2021/2022', '2022/2023', '2023/2024',
+                       '2024/2025')
 
     # Normalize the season input
     normalized_season <- season
